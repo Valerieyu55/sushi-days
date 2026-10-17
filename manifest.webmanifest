@@ -1,0 +1,16 @@
+{
+  "name": "Sushi 家行事曆",
+  "short_name": "Sushi 家",
+  "description": "霖霖、豪豪和 Sushi 的家庭行事曆",
+  "lang": "zh-Hant",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#eef6f5",
+  "theme_color": "#2a9787",
+  "icons": [
+    {"src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png"},
+    {"src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png"},
+    {"src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ]
+}

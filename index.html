@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Sushi 家</title>
+<meta name="theme-color" content="#2a9787">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Sushi 家">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Huninn&family=Noto+Sans+TC:wght@400;500&display=swap">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="app.css">
+<script src="config.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <header class="belt">
+    <figure class="photo" id="photo-box" hidden><img id="family-photo" alt="霖霖、豪豪和 Sushi 的全家福"><button type="button" class="pedit" id="photo-edit">換照片・調整</button></figure>
+    <div class="belt-top">
+      <div class="brand">Sushi 家行事曆</div>
+      <div class="me">我是
+        <div class="seg" role="group" aria-label="我是誰">
+          <button type="button" id="me-mom" data-me="mom">霖霖</button>
+          <button type="button" id="me-dad" data-me="dad">豪豪</button>
+        </div>
+      </div>
+    </div>
+    <div class="crew" id="crew" role="group" aria-label="只看某個人的行程"></div>
+  </header>
+
+  <section class="login" id="login" hidden>
+    <div class="login-pic" id="login-pic"></div>
+    <h2>登入 Google 就能開始</h2>
+    <p>行程存在你們的 Google「家庭」日曆，霖霖和豪豪各自用自己的 Google 帳號登入，看到的是同一份行事曆。</p>
+    <button type="button" class="btn primary" id="login-btn">用 Google 帳號登入</button>
+    <p class="err" id="login-err" hidden></p>
+  </section>
+
+  <section class="login" id="setup" hidden>
+    <h2>還差一步設定</h2>
+    <p>請在 GitHub 打開 <strong>config.js</strong>，把 Google Cloud 的「OAuth 用戶端 ID」貼進 <code>CLIENT_ID</code> 的引號裡，存檔後重新打開這個 app。步驟寫在 README 裡。</p>
+  </section>
+
+  <div id="main" hidden style="display:flex;flex-direction:column;gap:14px">
+    <div class="solobar" id="solobar" hidden>
+      <span class="solo-ic" id="solo-ic"></span>
+      <span class="solo-tx"><strong id="solo-name"></strong><small id="solo-sub"></small></span>
+      <button type="button" id="solo-back">回到全家</button>
+    </div>
+    <div class="monthbar">
+      <h1 id="mtitle"></h1>
+      <button class="pill" type="button" id="go-today">今天</button>
+      <button class="iconbtn" type="button" id="prev" aria-label="上個月">‹</button>
+      <button class="iconbtn" type="button" id="next" aria-label="下個月">›</button>
+    </div>
+    <div class="filters" id="filters" role="group" aria-label="顯示誰的行程"></div>
+    <section class="cal" aria-label="月曆">
+      <div class="dow"><div>日</div><div>一</div><div>二</div><div>三</div><div>四</div><div>五</div><div>六</div></div>
+      <div class="grid" id="grid"></div>
+    </section>
+    <div class="gstate" id="gstate" hidden></div>
+    <section class="agenda" id="agenda" aria-live="polite"></section>
+    <div class="foot"><span id="synced"></span><button type="button" id="refresh">重新整理</button><button type="button" id="logout">登出</button></div>
+  </div>
+</div>
+
+<button class="fab" type="button" id="fab" aria-label="新增行程" hidden>+</button>
+
+<div class="scrim" id="scrim" hidden></div>
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title" hidden>
+  <form class="sheet-in" id="form" novalidate>
+    <div class="grab"></div>
+    <h3 id="sheet-title">新增行程</h3>
+    <div class="field" id="tplbox">
+      <div class="tplhead"><span class="lbl">常用行程，點一下帶入</span><button type="button" id="tpl-manage">管理</button></div>
+      <div class="tpls" id="tpls"></div>
+    </div>
+    <div class="field">
+      <label for="f-title">要做什麼</label>
+      <input type="text" id="f-title" maxlength="60" placeholder="例如：Sushi 打預防針" autocomplete="off">
+    </div>
+    <div class="field">
+      <span class="lbl">跟誰有關</span>
+      <div class="who" id="f-who"></div>
+    </div>
+    <div class="row" id="daterow">
+      <div class="field"><label for="f-date">日期</label><input type="date" id="f-date"></div>
+      <div class="field"><label for="f-end">結束日期（可不填）</label><input type="date" id="f-end"></div>
+    </div>
+    <div class="toggle"><span>整天</span><button type="button" class="switch" id="f-allday" role="switch" aria-checked="false" aria-label="整天"></button></div>
+    <div class="row" id="timerow">
+      <div class="field"><label for="f-start">開始</label><input type="time" id="f-start" value="09:00"></div>
+      <div class="field"><label for="f-stop">結束</label><input type="time" id="f-stop" value="10:00"></div>
+    </div>
+    <div class="row">
+      <div class="field">
+        <label for="f-repeat">重複</label>
+        <select id="f-repeat">
+          <option value="none">不重複</option>
+          <option value="weekly">每週</option>
+          <option value="biweekly">每兩週</option>
+          <option value="every4w">每四週</option>
+          <option value="monthly">每月</option>
+          <option value="yearly">每年</option>
+          <option value="pick">自己點選日期</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="f-remind">提醒</label>
+        <select id="f-remind"></select>
+      </div>
+    </div>
+    <div class="field" id="pickbox" hidden>
+      <span class="lbl">點一下選一天，手指按住滑過可以一次選很多天；點上面的「六」會選這個月所有星期六</span>
+      <div class="mini">
+        <div class="mini-head"><button type="button" id="pk-prev" aria-label="上個月">‹</button><strong id="pk-title"></strong><button type="button" id="pk-next" aria-label="下個月">›</button></div>
+        <div class="mini-grid" id="pk-grid"></div>
+      </div>
+      <div class="pk-tools"><button type="button" id="pk-wkend">這個月週末</button><button type="button" id="pk-wkday">這個月平日</button><button type="button" id="pk-clear">全部清除</button></div>
+      <div class="picked" id="pk-list"></div>
+    </div>
+    <div class="field">
+      <span class="lbl" id="f-color-lbl">顏色</span>
+      <div class="swatches" id="f-colors" role="radiogroup" aria-labelledby="f-color-lbl"></div>
+      <label class="colorall" id="f-colorall-row" hidden><input type="checkbox" id="f-colorall" checked><span id="f-colorall-txt"></span></label>
+    </div>
+    <div class="field"><label for="f-note">備註</label><textarea id="f-note" maxlength="400" placeholder="地點、要帶的東西…"></textarea></div>
+    <p class="hint" id="f-gnote"></p>
+    <div class="err" id="f-err" hidden></div>
+    <div class="confirm" id="confirm" hidden><span id="confirm-text">確定刪除這個行程？</span>
+      <button type="button" class="btn danger" id="confirm-one" style="background:var(--mom);color:var(--mom-on)">刪除</button>
+      <button type="button" class="btn danger" id="confirm-all" style="background:var(--mom);color:var(--mom-on)" hidden>整個重複都刪</button>
+      <button type="button" class="btn ghost" id="confirm-no">取消</button>
+    </div>
+    <div class="actions">
+      <button type="button" class="btn danger" id="del" hidden>刪除</button>
+      <button type="button" class="btn link" id="save-tpl">存成常用</button>
+      <button type="button" class="btn ghost" id="cancel">取消</button>
+      <button type="submit" class="btn primary" id="save">儲存</button>
+    </div>
+  </form>
+</div>
+<div class="sheet" id="psheet" role="dialog" aria-modal="true" aria-labelledby="p-title" hidden>
+  <div class="sheet-in">
+    <div class="grab"></div>
+    <h3 id="p-title">全家福</h3>
+    <p class="hint">用手指拖移照片調整位置，拉桿放大縮小。照片只存在這支手機上。</p>
+    <div class="pe-frame" id="pe-frame"><img id="pe-img" alt="調整中的全家福" draggable="false"></div>
+    <div class="pe-zoom"><span>縮放</span><input type="range" id="pe-zoom" min="1" max="3" step="0.01" value="1" aria-label="縮放"></div>
+    <div class="err" id="p-err" hidden></div>
+    <div class="actions">
+      <span class="btn ghost filebtn">選照片<input type="file" id="pe-file" accept="image/*" aria-label="選照片"></span>
+      <button type="button" class="btn ghost" id="pe-remove">移除</button>
+      <button type="button" class="btn ghost" id="pe-cancel">取消</button>
+      <button type="button" class="btn primary" id="pe-save">儲存</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast" hidden></div>
+<script src="app.js"></script>
+</body>
+</html>
