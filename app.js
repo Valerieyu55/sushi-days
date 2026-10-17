@@ -361,6 +361,7 @@ async function load(){
   const seq=++loadSeq, r=gridRange();
   document.body.classList.add("loading");
   try{
+    if(!autoMe.done){ autoMe.done=true; api("/calendars/primary").then(c=>{ if(c&&c.id){ store.set("sc.email",c.id); autoMe(c.id); } }).catch(()=>{ autoMe.done=false; }); }
     if(!famCal) await findFamilyCal();
     const [fam, mine] = await Promise.all([
       famCal ? listAll(famCal, isoAt(r.start), isoAt(r.end)) : Promise.resolve([]),
