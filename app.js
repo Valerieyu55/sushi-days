@@ -1,18 +1,18 @@
 (function(){
 "use strict";
 const BLUSH = (y,dx=8.8) => `<ellipse cx="${20-dx}" cy="${y}" rx="2.3" ry="1.4" fill="var(--blush)" opacity=".85"/><ellipse cx="${20+dx}" cy="${y}" rx="2.3" ry="1.4" fill="var(--blush)" opacity=".85"/>`;
-const RICE = `<rect x="5" y="13" width="30" height="17.5" rx="8" fill="var(--rice)" stroke="var(--ink)" stroke-width="1.6"/>`;
-const SALMON = `<path d="M3.5 12c0-4 3-6.5 8-6.5h17c5 0 8 2.5 8 6.5 0 2-1.5 3-3.5 3h-26C5 15 3.5 14 3.5 12z" fill="#f6896b" stroke="var(--ink)" stroke-width="1.6"/>`;
+const RICE = `<rect x="5" y="13" width="30" height="17.5" rx="8" fill="var(--rice)" stroke="var(--face,#2f2a36)" stroke-width="1.6"/>`;
+const SALMON = `<path d="M3.5 12c0-4 3-6.5 8-6.5h17c5 0 8 2.5 8 6.5 0 2-1.5 3-3.5 3h-26C5 15 3.5 14 3.5 12z" fill="#f6896b" stroke="var(--face,#2f2a36)" stroke-width="1.6"/>`;
 const SUSHI = {
   // 霖霖：炙燒鮭魚握壽司，瞇眼開心笑
   mom: RICE + SALMON + `<path d="M8.5 9.8c3-2 6.3-2.3 9.2-1.8s6.3.8 9.2-.1 4.6-.3 5.6.7" stroke="#8a3d1c" stroke-width="2.6" stroke-linecap="round" fill="none" opacity=".45"/><circle cx="12" cy="8.2" r="1" fill="#6e2f14" opacity=".55"/><circle cx="26" cy="7.6" r="1.1" fill="#6e2f14" opacity=".55"/><path d="M7.5 11l2.7-2.2 2.7 2.2 2.7-2.2 2.7 2.2 2.7-2.2 2.7 2.2 2.7-2.2 2.7 2.2 2.7-2.2" stroke="#fff6dc" stroke-width="1.3" fill="none" stroke-linejoin="round" stroke-linecap="round"/>`
-     + `<path d="M12.6 21.6q2.2-2.6 4.4 0M23 21.6q2.2-2.6 4.4 0" stroke="var(--ink)" stroke-width="1.6" fill="none" stroke-linecap="round"/><path d="M17.3 23.8h5.4q-.3 3.4-2.7 3.4t-2.7-3.4z" fill="#d9536a" stroke="var(--ink)" stroke-width="1.1" stroke-linejoin="round"/>` + BLUSH(25),
+     + `<path d="M12.6 21.6q2.2-2.6 4.4 0M23 21.6q2.2-2.6 4.4 0" stroke="var(--face,#2f2a36)" stroke-width="1.6" fill="none" stroke-linecap="round"/><path d="M17.3 23.8h5.4q-.3 3.4-2.7 3.4t-2.7-3.4z" fill="#d9536a" stroke="var(--face,#2f2a36)" stroke-width="1.1" stroke-linejoin="round"/>` + BLUSH(25),
   // 豪豪：鮭魚半熟蛋軍艦，戴眼鏡大笑
-  dad: `<rect x="5" y="12.5" width="30" height="18" rx="5.5" fill="var(--nori)" stroke="var(--ink)" stroke-width="1.6"/><ellipse cx="20" cy="13.1" rx="14" ry="3" fill="var(--rice)" stroke="var(--ink)" stroke-width="1.2"/><rect x="6.5" y="7.5" width="9.5" height="6.5" rx="2.5" fill="#f6896b" stroke="var(--ink)" stroke-width="1.3" transform="rotate(-14 11.2 10.7)"/><rect x="24" y="7.5" width="9.5" height="6.5" rx="2.5" fill="#f6896b" stroke="var(--ink)" stroke-width="1.3" transform="rotate(12 28.7 10.7)"/><ellipse cx="20" cy="8.6" rx="7" ry="5.4" fill="#fffdf6" stroke="var(--ink)" stroke-width="1.4"/><circle cx="20" cy="9.1" r="3.3" fill="#f7a823"/><circle cx="19" cy="8.1" r="1" fill="#ffd27a"/>`
+  dad: `<rect x="5" y="12.5" width="30" height="18" rx="5.5" fill="var(--nori)" stroke="var(--face,#2f2a36)" stroke-width="1.6"/><ellipse cx="20" cy="13.1" rx="14" ry="3" fill="var(--rice)" stroke="var(--face,#2f2a36)" stroke-width="1.2"/><rect x="6.5" y="7.5" width="9.5" height="6.5" rx="2.5" fill="#f6896b" stroke="var(--face,#2f2a36)" stroke-width="1.3" transform="rotate(-14 11.2 10.7)"/><rect x="24" y="7.5" width="9.5" height="6.5" rx="2.5" fill="#f6896b" stroke="var(--face,#2f2a36)" stroke-width="1.3" transform="rotate(12 28.7 10.7)"/><ellipse cx="20" cy="8.6" rx="7" ry="5.4" fill="#fffdf6" stroke="var(--face,#2f2a36)" stroke-width="1.4"/><circle cx="20" cy="9.1" r="3.3" fill="#f7a823"/><circle cx="19" cy="8.1" r="1" fill="#ffd27a"/>`
      + `<circle cx="14.6" cy="20.6" r="3" fill="none" stroke="var(--rice)" stroke-width="1.3"/><circle cx="25.4" cy="20.6" r="3" fill="none" stroke="var(--rice)" stroke-width="1.3"/><path d="M17.6 20.4q2.4-1 4.8 0" stroke="var(--rice)" stroke-width="1.2" fill="none"/><path d="M13.4 21q1.2-1.4 2.4 0M24.2 21q1.2-1.4 2.4 0" stroke="var(--rice)" stroke-width="1.3" fill="none" stroke-linecap="round"/><path d="M16.4 24.2h7.2q-.2 4-3.6 4t-3.6-4z" fill="#d9536a" stroke="var(--rice)" stroke-width="1.1" stroke-linejoin="round"/><path d="M17.6 24.3h4.8v1.1h-4.8z" fill="#fff"/>` + BLUSH(25.2,10.5),
   // Sushi：鮭魚握壽司，亮晶晶大眼睛
   sushi: RICE + SALMON + `<path d="M10.5 7.5l3 6M18 6.5l3 7M25.5 6.5l3 7" stroke="#fff" stroke-width="1.6" stroke-linecap="round" opacity=".85"/>`
-     + `<circle cx="14.8" cy="21.6" r="2.2" fill="var(--ink)"/><circle cx="25.2" cy="21.6" r="2.2" fill="var(--ink)"/><circle cx="15.6" cy="20.8" r=".85" fill="#fff"/><circle cx="26" cy="20.8" r=".85" fill="#fff"/><circle cx="14.2" cy="22.5" r=".4" fill="#fff"/><circle cx="24.6" cy="22.5" r=".4" fill="#fff"/><path d="M18 24.4h4q-.2 2.6-2 2.6t-2-2.6z" fill="#d9536a" stroke="var(--ink)" stroke-width="1" stroke-linejoin="round"/>` + BLUSH(25)
+     + `<circle cx="14.8" cy="21.6" r="2.2" fill="var(--face,#2f2a36)"/><circle cx="25.2" cy="21.6" r="2.2" fill="var(--face,#2f2a36)"/><circle cx="15.6" cy="20.8" r=".85" fill="#fff"/><circle cx="26" cy="20.8" r=".85" fill="#fff"/><circle cx="14.2" cy="22.5" r=".4" fill="#fff"/><circle cx="24.6" cy="22.5" r=".4" fill="#fff"/><path d="M18 24.4h4q-.2 2.6-2 2.6t-2-2.6z" fill="#d9536a" stroke="var(--face,#2f2a36)" stroke-width="1" stroke-linejoin="round"/>` + BLUSH(25)
 };
 const su = (k,w=40) => `<svg class="su" width="${w}" height="${Math.round(w*0.8)}" viewBox="0 0 40 32" aria-hidden="true">${SUSHI[k]||""}</svg>`;
 function svgEl(k,w){ const t=document.createElement("template"); t.innerHTML=su(k,w); return t.content.firstChild; }
@@ -56,7 +56,7 @@ const cleanTitle = t => String(t||"").replace(/^\s*\d{1,2}[:：]\d{2}\s*/,"").re
 const norm = s => String(s||"").replace(/\s/g,"").toLowerCase();
 
 let me = store.get("sc.me","mom");
-let filter = store.get("sc.filter",["mom","dad","sushi","g"]);
+let filter = store.get("sc.filter2",["mom","dad","sushi"]);
 const now = new Date();
 let view = new Date(now.getFullYear(), now.getMonth(), 1);
 let sel = keyOf(now);
@@ -162,7 +162,7 @@ function mineOn(k){
   return mineEvents.filter(e=>onDay(e,k) && !isBirthdayOther(e) && !fam.some(t=>t && (norm(cleanTitle(e.title)).includes(t)||t.includes(norm(cleanTitle(e.title)))))).sort(byTime);
 }
 function setPeople(list){ filter = list.concat(filter.includes("g")?["g"]:[]); applyFilter(); }
-function applyFilter(){ store.set("sc.filter",filter); const pp=people(); renderMe(pp.length===1?pp[0]:null); renderFilters(); renderMonth(); renderAgenda(); applySolo(); }
+function applyFilter(){ store.set("sc.filter2",filter); const pp=people(); renderMe(pp.length===1?pp[0]:null); renderFilters(); renderMonth(); renderAgenda(); applySolo(); }
 
 /* ---------------- render ---------------- */
 function applySolo(){
