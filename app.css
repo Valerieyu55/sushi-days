@@ -108,3 +108,10 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 :root{--fam:#b59680;--fam-on:#ffffff;--fam-bg:#f2e8de}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--fam:#cdb29c;--fam-on:#2a1e14;--fam-bg:#3a3028}}
 :root[data-theme="dark"]{--fam:#cdb29c;--fam-on:#2a1e14;--fam-bg:#3a3028}
+
+/* 我的 Google solo view */
+:root{--gsolo:#7f93b5;--gsolo-bg:#e6ebf4;--gsolo-on:#ffffff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--gsolo:#9fb1d0;--gsolo-bg:#262c3a;--gsolo-on:#161c2a}}
+:root[data-theme="dark"]{--gsolo:#9fb1d0;--gsolo-bg:#262c3a;--gsolo-on:#161c2a}
+body[data-solo="g"]{--solo:var(--gsolo);--solo-bg:var(--gsolo-bg);--solo-on:var(--gsolo-on)}
+.solobar .gbig{width:56px;height:56px;border-radius:50%;background:#fff;color:#4285f4;font:700 1.9rem/56px var(--font-num,system-ui);text-align:center}

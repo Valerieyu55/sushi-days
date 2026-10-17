@@ -161,19 +161,27 @@ function mineOn(k){
   const fam=famOn(k).map(e=>norm(cleanTitle(e.title)));
   return mineEvents.filter(e=>onDay(e,k) && !isBirthdayOther(e) && !fam.some(t=>t && (norm(cleanTitle(e.title)).includes(t)||t.includes(norm(cleanTitle(e.title)))))).sort(byTime);
 }
-function setPeople(list){ filter = list.concat(filter.includes("g")?["g"]:[]); applyFilter(); }
+function setPeople(list){ filter = list.slice(); applyFilter(); }
 function applyFilter(){ store.set("sc.filter2",filter); const pp=people(); renderMe(pp.length===1?pp[0]:null); renderFilters(); renderMonth(); renderAgenda(); applySolo(); }
 
 /* ---------------- render ---------------- */
 function applySolo(){
-  const pp=people(), k=pp.length===1?pp[0]:(pp.length===3?"all":null);
+  const A=["mom","dad","sushi"], pp=people(), g=filter.includes("g");
+  const k=pp.length===1?pp[0]:(pp.length===3?"all":(pp.length===0&&g?"g":null));
   if(k) document.body.dataset.solo=k; else delete document.body.dataset.solo;
   $("solobar").hidden=!k;
   const ic=$("solo-ic"); ic.textContent=""; ic.classList.toggle("trio",k==="all");
-  if(k==="all"){ ["mom","sushi","dad"].forEach(m=>ic.append(svgEl(m,38))); $("solo-name").textContent="全家的行事曆"; $("solo-sub").textContent="霖霖、豪豪和 Sushi 的行程都在這裡"; $("solo-back").hidden=true; }
-  else if(k){ ic.append(svgEl(k,56)); $("solo-name").textContent=M[k].name+"的行事曆"; $("solo-sub").textContent="只顯示有"+M[k].name+"的行程"; $("solo-back").hidden=false; }
-  if(k && filter.includes("g")){ const gb=document.createElement("span"); gb.className="gbadge"; gb.textContent="G"; ic.append(gb);
-    $("solo-name").textContent=(k==="all"?"全家":M[k].name)+" ＋ 我的 Google"; $("solo-sub").textContent=(k==="all"?"全家的行程":"有"+M[k].name+"的行程")+"，加上你自己的 Google 行程"; }
+  const back=$("solo-back"), nm=$("solo-name"), sb=$("solo-sub"); back.hidden=false;
+  const go=list=>{ filter=list; applyFilter(); };
+  if(k==="g"){ const gb=document.createElement("span"); gb.className="gbig"; gb.textContent="G"; ic.append(gb);
+    nm.textContent="我的 Google 行事曆"; sb.textContent="只顯示你自己的 Google 日曆，別人看不到"; back.textContent="加上全家"; back.onclick=()=>go(A.concat("g")); }
+  else if(k==="all"){ ["mom","sushi","dad"].forEach(m=>ic.append(svgEl(m,38)));
+    if(g){ nm.textContent="全家 ＋ 我的 Google"; sb.textContent="全家的行程，加上你自己的 Google 行程"; back.textContent="只看全家"; back.onclick=()=>go(A.slice()); }
+    else { nm.textContent="全家的行事曆"; sb.textContent="霖霖、豪豪和 Sushi 的行程都在這裡"; back.hidden=true; } }
+  else if(k){ ic.append(svgEl(k,56)); const n=M[k].name;
+    nm.textContent=g? n+" ＋ 我的 Google" : n+"的行事曆"; sb.textContent=g? "有"+n+"的行程，加上你自己的 Google 行程" : "只顯示有"+n+"的行程";
+    back.textContent="回到全家"; back.onclick=()=>go(A.slice()); }
+  if(k && k!=="g" && g){ const gb=document.createElement("span"); gb.className="gbadge"; gb.textContent="G"; ic.append(gb); }
   const meta=document.querySelector('meta[name="theme-color"]'); if(meta) meta.content=getComputedStyle(document.body).backgroundColor;
 }
 function renderFilters(){
@@ -183,10 +191,10 @@ function renderFilters(){
   allBtn.onclick=()=>setPeople(ALL3.slice()); f.append(allBtn);
   Object.entries(M).concat([["g",{name:"我的 Google"}]]).forEach(([k,v])=>{
     const b=document.createElement("button"); b.type="button"; b.className="chip"; b.dataset.m=k; b.id="flt-"+k;
-    b.setAttribute("aria-pressed", k==="g" ? filter.includes("g") : isSolo(k));
+    b.setAttribute("aria-pressed", k==="g" ? filter.includes("g") : (isSolo(k) && !filter.includes("g")));
     const i=document.createElement("span"); i.className="ic"+(k==="g"?" g":""); if(k==="g") i.textContent="G"; else i.append(svgEl(k,26));
     const s=document.createElement("span"); s.textContent=v.name; b.append(i,s);
-    b.onclick=()=>{ if(k==="g"){ filter = filter.includes("g") ? filter.filter(x=>x!=="g") : filter.concat("g"); applyFilter(); } else setPeople(isSolo(k) ? ALL3.slice() : [k]); };
+    b.onclick=()=>{ if(k==="g"){ filter = (people().length===0 && filter.includes("g")) ? ["mom","dad","sushi"] : ["g"]; applyFilter(); } else setPeople(isSolo(k) ? ALL3.slice() : [k]); };
     f.append(b);
   });
 }
@@ -631,7 +639,6 @@ function moveMonth(n){ view=new Date(view.getFullYear(),view.getMonth()+n,1); re
 $("prev").onclick=()=>moveMonth(-1); $("next").onclick=()=>moveMonth(1);
 $("go-today").onclick=()=>{ const t=new Date(); view=new Date(t.getFullYear(),t.getMonth(),1); sel=keyOf(t); renderMonth(); renderAgenda(); load(); };
 $("fab").onclick=()=>openSheet(null);
-$("solo-back").onclick=()=>setPeople(ALL3.slice());
 $("refresh").onclick=()=>{ famCal=null; load(); };
 let sx=null; $("grid").addEventListener("touchstart",e=>{sx=e.touches[0].clientX},{passive:true});
 $("grid").addEventListener("touchend",e=>{ if(sx==null) return; const dx=e.changedTouches[0].clientX-sx; sx=null; if(Math.abs(dx)>60) moveMonth(dx<0?1:-1); });
