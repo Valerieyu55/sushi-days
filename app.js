@@ -320,11 +320,27 @@ document.addEventListener("pointerdown",e=>{ if(openSwipe && !openSwipe.contains
 
 /* ---------------- data loading ---------------- */
 let loadSeq=0;
+/* 用哪個 Google 帳號登入，就自動切換成誰（只存 email 的雜湊，不把 email 放在程式碼裡） */
+const WHO_BY_HASH = {
+  "2476e569711a1e900184509141dc05dc52d6b7c648f475803a78605ac357a4b5":"mom",
+  "02af08ae84ffa39fa1ee6e257d4b1e4527c03572e763bafffd7f0abdd0561e5b":"dad"
+};
+async function autoMe(email){
+  try{
+    const buf=await crypto.subtle.digest("SHA-256", new TextEncoder().encode(String(email).trim().toLowerCase()));
+    const h=[...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,"0")).join("");
+    const who=WHO_BY_HASH[h]; if(!who) return;
+    const changed = who!==me || store.get("sc.meAuto","")!==h;
+    me=who; store.set("sc.me",me); store.set("sc.meAuto",h);
+    const pp=people(); renderMe(pp.length===1?pp[0]:null);
+    if(changed) toast("嗨 "+M[me].name+"！已經幫你切換好了");
+  }catch(e){}
+}
 async function findFamilyCal(){
   try{
     const r=await api("/users/me/calendarList?maxResults=250");
     const items=(r&&r.items)||[];
-    const prim=items.find(c=>c.primary); if(prim) store.set("sc.email",prim.id);
+    const prim=items.find(c=>c.primary); if(prim){ store.set("sc.email",prim.id); autoMe(prim.id); }
     const byId=items.find(c=>c.id===CFG.FAMILY_CAL);
     const byName=items.find(c=>c.summary==="家庭") || items.find(c=>/^family\d+@group/.test(c.id));
     famCal=(byId||byName||{}).id || CFG.FAMILY_CAL || null;
