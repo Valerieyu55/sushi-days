@@ -101,3 +101,10 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
   --dad:#97b5a3; --dad-on:#11201a; --dad-bg:#26332c;
   --sushi:#ef9fb4; --sushi-on:#2a1018; --sushi-bg:#3d2730;
   --fam:#a3b2cf; --fam-on:#161c2a; --fam-bg:#262c3a}
+
+/* 我的 Google badge on the banner; 全家 = 奶茶色 */
+.solobar .solo-ic{position:relative}
+.solobar .gbadge{position:absolute;right:-7px;bottom:-7px;width:24px;height:24px;border-radius:50%;background:#fff;color:#4285f4;font:700 .8rem/24px var(--font-num,system-ui);text-align:center;box-shadow:0 2px 6px rgba(0,0,0,.18);border:1.5px solid var(--glass-border)}
+:root{--fam:#b59680;--fam-on:#ffffff;--fam-bg:#f2e8de}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--fam:#cdb29c;--fam-on:#2a1e14;--fam-bg:#3a3028}}
+:root[data-theme="dark"]{--fam:#cdb29c;--fam-on:#2a1e14;--fam-bg:#3a3028}

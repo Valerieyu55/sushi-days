@@ -172,6 +172,8 @@ function applySolo(){
   const ic=$("solo-ic"); ic.textContent=""; ic.classList.toggle("trio",k==="all");
   if(k==="all"){ ["mom","sushi","dad"].forEach(m=>ic.append(svgEl(m,38))); $("solo-name").textContent="全家的行事曆"; $("solo-sub").textContent="霖霖、豪豪和 Sushi 的行程都在這裡"; $("solo-back").hidden=true; }
   else if(k){ ic.append(svgEl(k,56)); $("solo-name").textContent=M[k].name+"的行事曆"; $("solo-sub").textContent="只顯示有"+M[k].name+"的行程"; $("solo-back").hidden=false; }
+  if(k && filter.includes("g")){ const gb=document.createElement("span"); gb.className="gbadge"; gb.textContent="G"; ic.append(gb);
+    $("solo-name").textContent=(k==="all"?"全家":M[k].name)+" ＋ 我的 Google"; $("solo-sub").textContent=(k==="all"?"全家的行程":"有"+M[k].name+"的行程")+"，加上你自己的 Google 行程"; }
   const meta=document.querySelector('meta[name="theme-color"]'); if(meta) meta.content=getComputedStyle(document.body).backgroundColor;
 }
 function renderFilters(){
