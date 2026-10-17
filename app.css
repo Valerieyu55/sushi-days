@@ -138,3 +138,23 @@ body[data-solo="g"]{--solo:var(--gsolo);--solo-bg:var(--gsolo-bg);--solo-on:var(
 .day.hol.today .n{color:var(--today-on)}
 .day .hname{font-size:.56rem;line-height:1.1;color:var(--hol);white-space:nowrap;overflow:hidden;max-width:100%;margin-top:-2px}
 .holnote{font-size:.85rem;color:var(--hol);background:color-mix(in srgb,var(--hol) 10%,var(--paper));border:1px solid color-mix(in srgb,var(--hol) 25%,transparent);border-radius:14px;padding:8px 12px;margin:-2px 0 4px}
+
+/* 小圖示倒數、特別日子、明顯的翻頁按鈕 */
+.cd{font:inherit;text-align:left;-webkit-appearance:none;appearance:none}
+.cd .e{height:32px;display:flex;align-items:center}
+.cd .e svg{display:block}
+.day .bars b.sp{background:color-mix(in srgb,var(--hol) 15%,var(--paper));color:var(--hol);font-weight:500}
+.holnote{display:flex;align-items:center;gap:8px}
+.holnote svg{flex:none}
+.spnote{display:flex;align-items:center;gap:10px;padding:9px 14px;border-radius:16px;margin:0 0 4px;background:var(--glass-strong);border:1px solid var(--glass-border);box-shadow:var(--glass-shadow);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+.spnote svg{flex:none}
+.spnote strong{display:block;font-weight:500}
+.spnote small{color:var(--muted);font-size:.78rem}
+.monthbar{gap:10px}
+.monthbar .todaybtn{display:inline-flex;align-items:center;gap:6px;min-height:46px;padding:0 18px 0 14px;font-size:1rem;font-weight:600;letter-spacing:.04em;
+  background:linear-gradient(135deg,var(--accent-2),var(--accent))!important;color:var(--accent-on)!important;border:1px solid var(--glass-border)!important;
+  box-shadow:0 8px 20px color-mix(in srgb,var(--accent) 38%,transparent), inset 0 1px 0 rgba(255,255,255,.5)!important}
+.monthbar .navbtn{width:48px!important;height:48px!important;color:var(--accent)!important;background:var(--glass-strong)!important;
+  border:1.5px solid color-mix(in srgb,var(--accent) 50%,transparent)!important;box-shadow:0 6px 16px color-mix(in srgb,var(--accent) 22%,transparent), inset 0 1px 0 rgba(255,255,255,.7)!important}
+.monthbar .todaybtn:active,.monthbar .navbtn:active{transform:scale(.93)}
+.monthbar .todaybtn,.monthbar .navbtn{transition:transform .12s ease;touch-action:manipulation}

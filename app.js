@@ -698,8 +698,31 @@ const HOLIDAYS = [
   ["元旦連假", "2027-12-31", "2028-01-02", {"2028-01-01":"元旦"}]
 ];
 // 學校的寒暑假（過了就自動不顯示；新學期再改日期）
-const SCHOOL_BREAKS = [["寒假", "2027-01-21", "❄️"], ["暑假", "2027-07-01", "🏖️"]];
+const SCHOOL_BREAKS = [["寒假", "2027-01-21", "snow"], ["暑假", "2027-07-01", "sun"]];
 const SUSHI_BORN_K = (typeof CFG!=="undefined" && CFG.SUSHI_BORN) || "2024-08-25";
+
+
+/* 小圖示（自己畫的，不用 emoji） */
+const IC_O='stroke="#2f2a36" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"';
+const IC_FACE='#2f2a36';
+function cakeSvg(c){ return '<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3.6c1.7 1.9 1.9 3.6 0 4.9-1.9-1.3-1.7-3 0-4.9z" fill="#f4b860" '+IC_O+'/><rect x="14.8" y="9" width="2.4" height="7" rx="1" fill="#fff" '+IC_O+'/><rect x="5.5" y="16" width="21" height="11" rx="3.2" fill="#fff7ee" '+IC_O+'/><path d="M5.5 19.2c0-1.8 1.4-3.2 3.2-3.2h14.6c1.8 0 3.2 1.4 3.2 3.2v.6c-1.1 1.7-2.4 1.7-3.5 0-1.1 1.7-2.4 1.7-3.5 0-1.1 1.7-2.4 1.7-3.5 0-1.1 1.7-2.4 1.7-3.5 0-1.1 1.7-2.4 1.7-3.5 0-1.1 1.7-2.4 1.7-3.5 0z" fill="'+c+'" '+IC_O+'/><circle cx="10" cy="24" r=".9" fill="'+c+'"/><circle cx="16" cy="24.6" r=".9" fill="#f4b860"/><circle cx="22" cy="24" r=".9" fill="'+c+'"/><path d="M3.5 27.5h25" '+IC_O+'/></svg>'; }
+const ICONS = {
+  ring: '<svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="20.5" r="8" fill="none" stroke="#e7c07a" stroke-width="3.6"/><circle cx="16" cy="20.5" r="9.8" fill="none" '+IC_O+'/><circle cx="16" cy="20.5" r="6.2" fill="none" '+IC_O+'/><path d="M11.8 8.6 16 3.6l4.2 5-4.2 4.6z" fill="#f6c6d8" '+IC_O+'/><path d="M11.8 8.6h8.4" '+IC_O+'/><path d="M25.5 4.5v3.4M23.8 6.2h3.4" stroke="#e7c07a" stroke-width="1.6" stroke-linecap="round"/></svg>',
+  heart: '<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 27.5S5 21.2 5 13.6a5.6 5.6 0 0 1 11-2.1 5.6 5.6 0 0 1 11 2.1c0 7.6-11 13.9-11 13.9z" fill="#f2a0b7" '+IC_O+'/><path d="M8.6 12.4a3.2 3.2 0 0 1 3-2.6" stroke="#fff" stroke-width="1.6" stroke-linecap="round" fill="none"/><circle cx="12.8" cy="15.6" r="1.1" fill="'+IC_FACE+'"/><circle cx="19.2" cy="15.6" r="1.1" fill="'+IC_FACE+'"/><path d="M14.6 18.4q1.4 1.3 2.8 0" fill="none" '+IC_O+'/><ellipse cx="10.6" cy="18" rx="1.5" ry="1" fill="#fff" opacity=".55"/><ellipse cx="21.4" cy="18" rx="1.5" ry="1" fill="#fff" opacity=".55"/></svg>',
+  flower: '<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 17v12" stroke="#7fa48c" stroke-width="2.2" stroke-linecap="round"/><path d="M16 24.5c-3.4 0-5.6-2.2-5.6-4.6 3.4 0 5.6 2.2 5.6 4.6z" fill="#a9c7b2" '+IC_O+'/><circle cx="11" cy="11.5" r="4" fill="#f6c3d3" '+IC_O+'/><circle cx="21" cy="11.5" r="4" fill="#f6c3d3" '+IC_O+'/><circle cx="16" cy="7.2" r="4" fill="#f6c3d3" '+IC_O+'/><circle cx="16" cy="14" r="5" fill="#ee9fb8" '+IC_O+'/><circle cx="16" cy="13.6" r="1.8" fill="#d9779a"/></svg>',
+  tie: '<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M9 4.5 16 7l7-2.5" fill="none" '+IC_O+'/><path d="M13 6.2h6l-1 3.6h-4z" fill="#6f8fb0" '+IC_O+'/><path d="M14 9.8h4l3.2 13.2L16 28.4 10.8 23z" fill="#8fa9c6" '+IC_O+'/><path d="M14.6 13.6l3.8 2.6M13.4 18l5.8 4" stroke="#fff" stroke-width="1.4" stroke-linecap="round"/></svg>',
+  snow: '<svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="22" r="7.4" fill="#fff" '+IC_O+'/><circle cx="16" cy="10.6" r="5.4" fill="#fff" '+IC_O+'/><circle cx="14.2" cy="10" r=".95" fill="'+IC_FACE+'"/><circle cx="17.8" cy="10" r=".95" fill="'+IC_FACE+'"/><path d="M16 11.6l3.2.9-3.2.8z" fill="#f0a35e" stroke="#f0a35e" stroke-width=".6" stroke-linejoin="round"/><rect x="10.6" y="14.6" width="10.8" height="2.8" rx="1.4" fill="#c49ac4" '+IC_O+'/><path d="M18.6 16.6l.9 4.2" stroke="#c49ac4" stroke-width="2.6" stroke-linecap="round"/><circle cx="16" cy="21" r=".9" fill="'+IC_FACE+'"/><circle cx="16" cy="24.4" r=".9" fill="'+IC_FACE+'"/></svg>',
+  sun: '<svg viewBox="0 0 32 32" aria-hidden="true"><g stroke="#f2b45a" stroke-width="2.2" stroke-linecap="round"><path d="M16 2.8v3M16 26.2v3M2.8 16h3M26.2 16h3M6.7 6.7l2.1 2.1M23.2 23.2l2.1 2.1M6.7 25.3l2.1-2.1M23.2 8.8l2.1-2.1"/></g><circle cx="16" cy="16" r="7.8" fill="#ffd47e" '+IC_O+'/><rect x="10.2" y="13" width="5" height="3.6" rx="1.5" fill="'+IC_FACE+'"/><rect x="16.8" y="13" width="5" height="3.6" rx="1.5" fill="'+IC_FACE+'"/><path d="M15.2 14.4h1.6" '+IC_O+'/><path d="M13.4 19.4q2.6 2 5.2 0" fill="none" '+IC_O+'/></svg>',
+  lantern: '<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 1.8v2.4" '+IC_O+'/><rect x="11.5" y="4.2" width="9" height="2.8" rx="1.1" fill="#d9b06c" '+IC_O+'/><ellipse cx="16" cy="15.6" rx="9.4" ry="8.8" fill="#ea8f8f" '+IC_O+'/><path d="M16 7v17.2M11.3 7.9c-2.8 4.8-2.8 10.6 0 15.4M20.7 7.9c2.8 4.8 2.8 10.6 0 15.4" fill="none" stroke="#c96878" stroke-width="1.2"/><rect x="11.5" y="23.4" width="9" height="2.8" rx="1.1" fill="#d9b06c" '+IC_O+'/><path d="M16 26.2v4" stroke="#d9b06c" stroke-width="2" stroke-linecap="round"/></svg>'
+};
+const MEMBER_TINT = {mom:"#c9a2d0", dad:"#9fbfac", sushi:"#f1a8bb"};
+function iconEl(key, w){
+  w=w||30;
+  if(key==="sushi"){ const e=svgEl("sushi",w); return e; }
+  const t=document.createElement("template");
+  t.innerHTML = key.startsWith("cake:") ? cakeSvg(MEMBER_TINT[key.slice(5)]||"#f1a8bb") : (ICONS[key]||ICONS.heart);
+  const el=t.content.firstChild; el.setAttribute("width",w); el.setAttribute("height",w); el.classList.add("mini-ic"); return el;
+}
 
 const dayDiff = (a,b) => Math.round((parse(b)-parse(a))/86400000);
 const spanDays = h => dayDiff(h[1],h[2])+1;
@@ -721,23 +744,33 @@ function nextMonthsary(todayK){
   const y=Math.floor(n/12), m=n%12;
   return {k:keyOf(d), label:"Sushi "+(y?y+" 歲"+(m?" "+m+" 個月":""):"滿 "+m+" 個月")};
 }
+/* 行事曆上本來沒有、但要標出來的日子 */
+function specialsOn(k){
+  const out=[], y=Number(k.slice(0,4)), md=k.slice(5);
+  if(md==="02-14") out.push({ic:"heart",name:"情人節"});
+  if(k===nthSunday(y,5,2)) out.push({ic:"flower",name:"母親節"});
+  if(md==="08-08") out.push({ic:"tie",name:"父親節"});
+  SCHOOL_BREAKS.forEach(([nm,d,ic])=>{ if(d===k) out.push({ic,name:nm+"開始"}); });
+  return out;
+}
 function countdownItems(){
   const t=keyOf(new Date()), items=[];
-  const add=(emoji,name,k)=>{ const n=dayDiff(t,k); if(n>=0) items.push({emoji,name,k,n}); };
-  add("💍","結婚紀念日",nextYearly(t,"08-18"));
-  const ms=nextMonthsary(t); add("🍣",ms.label,ms.k);
-  add("🎂","霖霖生日",nextYearly(t,"05-05"));
-  add("🎂","豪豪生日",nextYearly(t,"09-04"));
-  const sb=nextYearly(t,SUSHI_BORN_K.slice(5)); add("🎂","Sushi "+(Number(sb.slice(0,4))-Number(SUSHI_BORN_K.slice(0,4)))+" 歲生日",sb);
-  add("💝","情人節",nextYearly(t,"02-14"));
-  add("💐","母親節",nextMothersDay(t));
-  add("👔","父親節",nextYearly(t,"08-08"));
-  SCHOOL_BREAKS.forEach(([nm,k,e])=>add(e,nm,k));
+  const add=(ic,name,k)=>{ const n=dayDiff(t,k); if(n>=0) items.push({ic,name,k,n}); };
+  add("ring","結婚紀念日",nextYearly(t,"08-18"));
+  const ms=nextMonthsary(t); add("sushi",ms.label,ms.k);
+  add("cake:mom","霖霖生日",nextYearly(t,"05-05"));
+  add("cake:dad","豪豪生日",nextYearly(t,"09-04"));
+  const sb=nextYearly(t,SUSHI_BORN_K.slice(5)); add("cake:sushi","Sushi "+(Number(sb.slice(0,4))-Number(SUSHI_BORN_K.slice(0,4)))+" 歲生日",sb);
+  add("heart","情人節",nextYearly(t,"02-14"));
+  add("flower","母親節",nextMothersDay(t));
+  add("tie","父親節",nextYearly(t,"08-08"));
+  SCHOOL_BREAKS.forEach(([nm,k,ic])=>add(ic,nm,k));
   const on=holidayOn(t);
-  if(on && spanDays(on.span)>=3) items.push({emoji:"🎌",name:on.span[0]+"中",k:on.span[2],n:0,live:true});
-  else { const nx=HOLIDAYS.find(h=>h[1]>t && spanDays(h)>=3); if(nx) add("🎌",nx[0],nx[1]); }
+  if(on && spanDays(on.span)>=3) items.push({ic:"lantern",name:on.span[0]+"中",k:on.span[2],n:0,live:true});
+  else { const nx=HOLIDAYS.find(h=>h[1]>t && spanDays(h)>=3); if(nx) add("lantern",nx[0],nx[1]); }
   return items.sort((a,b)=>a.n-b.n);
 }
+function goDay(k){ const d=parse(k); sel=k; const nv=new Date(d.getFullYear(),d.getMonth(),1); const moved=nv.getTime()!==view.getTime(); view=nv; if(moved && typeof load==="function") load(); renderMonth(); renderAgenda(); }
 function renderCountdown(){
   const main=$("solobar"); if(!main || !main.parentNode) return;
   let box=$("cdbox");
@@ -745,15 +778,15 @@ function renderCountdown(){
   box.textContent="";
   const row=document.createElement("div"); row.className="cdrow";
   countdownItems().forEach(it=>{
-    const c=document.createElement("div"); c.className="cd"+(it.n===0?" now":"");
+    const c=document.createElement("button"); c.type="button"; c.className="cd"+(it.n===0?" now":"");
     const d=parse(it.k);
     c.innerHTML='<span class="e"></span><span class="nm"></span><span class="num"></span><span class="dt"></span>';
-    c.children[0].textContent=it.emoji; c.children[1].textContent=it.name;
+    c.children[0].append(iconEl(it.ic,30)); c.children[1].textContent=it.name;
     if(it.n===0){ c.children[2].textContent=it.live?"放假中":"就是今天"; }
     else { c.children[2].textContent=it.n; const s=document.createElement("small"); s.textContent="天"; c.children[2].append(s); }
     c.children[3].textContent=it.live?"到 "+(d.getMonth()+1)+"/"+d.getDate():(d.getMonth()+1)+"/"+d.getDate()+"（"+"日一二三四五六"[d.getDay()]+"）";
-    c.title=it.name+"・"+it.k;
-    c.onclick=()=>{ sel=it.k; view=new Date(d.getFullYear(),d.getMonth(),1); if(typeof load==="function") load(); renderMonth(); renderAgenda(); };
+    c.setAttribute("aria-label",it.name+"，"+(it.n===0?"今天":"還有 "+it.n+" 天"));
+    c.onclick=()=>goDay(it.live?keyOf(new Date()):it.k);
     row.append(c);
   });
   box.append(row);
@@ -764,22 +797,49 @@ function decorateHolidays(){
   [...g.children].forEach((b,i)=>{
     const k=addDays(r.start,i), h=holidayOn(k);
     b.classList.toggle("hol",!!h);
-    const old=b.querySelector(".hname"); if(old) old.remove();
+    b.querySelectorAll(".hname,.sp").forEach(x=>x.remove());
     if(h){ const s=document.createElement("span"); s.className="hname"; s.textContent=h.label; const n=b.querySelector(".n"); if(n) n.after(s); else b.prepend(s); }
+    const sp=specialsOn(k);
+    if(sp.length){
+      let bars=b.querySelector(".bars");
+      if(!bars){ bars=document.createElement("span"); bars.className="bars"; const ref=b.querySelector(".more"); ref?b.insertBefore(bars,ref):b.append(bars); }
+      sp.slice().reverse().forEach(x=>{ const t=document.createElement("b"); t.className="sp"; t.textContent=x.name; bars.prepend(t); });
+    }
   });
 }
 function holidayNote(){
-  const a=$("agenda"); if(!a) return; const h=holidayOn(sel); if(!h) return;
-  const p=document.createElement("div"); p.className="holnote";
-  const s=h.span, n=spanDays(s), d1=parse(s[1]), d2=parse(s[2]);
-  p.textContent="🎌 "+(h.label!=="放假"?h.label+"・":"")+s[0]+(n>1?"（"+(d1.getMonth()+1)+"/"+d1.getDate()+"–"+(d2.getMonth()+1)+"/"+d2.getDate()+"，放 "+n+" 天）":"（放假）");
-  const h2=a.querySelector("h2"); if(h2) h2.after(p); else a.prepend(p);
+  const a=$("agenda"); if(!a) return;
+  const h2=a.querySelector("h2"); let after=h2;
+  const put=el=>{ if(after) after.after(el); else a.prepend(el); after=el; };
+  const h=holidayOn(sel);
+  if(h){
+    const p=document.createElement("div"); p.className="holnote";
+    const s=h.span, n=spanDays(s), d1=parse(s[1]), d2=parse(s[2]);
+    const tx=document.createElement("span");
+    tx.textContent=(h.label!=="放假"?h.label+"・":"")+s[0]+(n>1?"（"+(d1.getMonth()+1)+"/"+d1.getDate()+"–"+(d2.getMonth()+1)+"/"+d2.getDate()+"，放 "+n+" 天）":"（放假）");
+    p.append(iconEl("lantern",22),tx); put(p);
+  }
+  const today=keyOf(new Date());
+  specialsOn(sel).forEach(x=>{
+    const p=document.createElement("div"); p.className="spnote";
+    const tx=document.createElement("span"); const n=dayDiff(today,sel);
+    tx.innerHTML="<strong></strong><small></small>"; tx.firstChild.textContent=x.name;
+    tx.lastChild.textContent= n===0?"就是今天！": n>0?"還有 "+n+" 天":"";
+    p.append(iconEl(x.ic,30),tx); put(p);
+  });
+}
+function styleNavButtons(){
+  const chev=d=>'<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="'+d+'"/></svg>';
+  const p=$("prev"), n=$("next"), t=$("go-today");
+  if(p){ p.innerHTML=chev("M15 5l-7 7 7 7"); p.classList.add("navbtn"); }
+  if(n){ n.innerHTML=chev("M9 5l7 7-7 7"); n.classList.add("navbtn"); }
+  if(t){ t.innerHTML='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="3.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/><circle cx="12" cy="15" r="1.6" fill="currentColor" stroke="none"/></svg><span>今天</span>'; t.classList.add("todaybtn"); }
 }
 {
   const _rm=renderMonth, _ra=renderAgenda;
   renderMonth=function(){ _rm.apply(this,arguments); decorateHolidays(); };
   renderAgenda=function(){ _ra.apply(this,arguments); holidayNote(); };
-  renderCountdown(); decorateHolidays(); holidayNote();
+  styleNavButtons(); renderCountdown(); decorateHolidays(); holidayNote();
   let lastDay=keyOf(new Date());
   document.addEventListener("visibilitychange",()=>{ if(!document.hidden && keyOf(new Date())!==lastDay){ lastDay=keyOf(new Date()); renderCountdown(); } });
 }
