@@ -659,4 +659,111 @@ renderPhoto();
   else if(store.get("sc.loggedIn",false)){ if(cache) showMain(); needLogin(); }
   else showLogin();
 })();
+
+/* ================= 國定假日・連假 & 倒數 ================= */
+// 行政院人事行政總處辦公日曆表（115、116 年）。每年 6 月左右公布隔年的，記得補上。
+const HOLIDAYS = [
+  ["教師節", "2026-09-28", "2026-09-28", {"2026-09-28":"教師節"}],
+  ["國慶連假", "2026-10-09", "2026-10-11", {"2026-10-10":"國慶日"}],
+  ["光復節連假", "2026-10-24", "2026-10-26", {"2026-10-25":"光復節"}],
+  ["行憲紀念日連假", "2026-12-25", "2026-12-27", {"2026-12-25":"行憲紀念日"}],
+  ["元旦連假", "2027-01-01", "2027-01-03", {"2027-01-01":"元旦"}],
+  ["春節連假", "2027-02-04", "2027-02-10", {"2027-02-04":"小年夜","2027-02-05":"除夕","2027-02-06":"初一","2027-02-07":"初二","2027-02-08":"初三"}],
+  ["228 連假", "2027-02-27", "2027-03-01", {"2027-02-28":"和平紀念日"}],
+  ["兒童節清明連假", "2027-04-03", "2027-04-06", {"2027-04-04":"兒童節","2027-04-05":"清明節"}],
+  ["勞動節連假", "2027-04-30", "2027-05-02", {"2027-05-01":"勞動節"}],
+  ["端午節", "2027-06-09", "2027-06-09", {"2027-06-09":"端午節"}],
+  ["中秋節", "2027-09-15", "2027-09-15", {"2027-09-15":"中秋節"}],
+  ["教師節", "2027-09-28", "2027-09-28", {"2027-09-28":"教師節"}],
+  ["國慶連假", "2027-10-09", "2027-10-11", {"2027-10-10":"國慶日"}],
+  ["光復節連假", "2027-10-23", "2027-10-25", {"2027-10-25":"光復節"}],
+  ["行憲紀念日連假", "2027-12-24", "2027-12-26", {"2027-12-25":"行憲紀念日"}],
+  ["元旦連假", "2027-12-31", "2028-01-02", {"2028-01-01":"元旦"}]
+];
+// 學校的寒暑假（過了就自動不顯示；新學期再改日期）
+const SCHOOL_BREAKS = [["寒假", "2027-01-21", "❄️"], ["暑假", "2027-07-01", "🏖️"]];
+const SUSHI_BORN_K = (typeof CFG!=="undefined" && CFG.SUSHI_BORN) || "2024-08-25";
+
+const dayDiff = (a,b) => Math.round((parse(b)-parse(a))/86400000);
+const spanDays = h => dayDiff(h[1],h[2])+1;
+function holidayOn(k){
+  for(const h of HOLIDAYS){ if(k>=h[1] && k<=h[2]) return {span:h, label:h[3][k]||"放假"}; }
+  return null;
+}
+function nextYearly(todayK, mmdd){
+  const y=Number(todayK.slice(0,4)); let k=y+"-"+mmdd; if(k<todayK) k=(y+1)+"-"+mmdd; return k;
+}
+function nthSunday(y, month, n){ const d=new Date(y,month-1,1); const first=(7-d.getDay())%7+1; return keyOf(new Date(y,month-1,first+7*(n-1))); }
+function nextMothersDay(todayK){ const y=Number(todayK.slice(0,4)); let k=nthSunday(y,5,2); if(k<todayK) k=nthSunday(y+1,5,2); return k; }
+function nextMonthsary(todayK){
+  const born=parse(SUSHI_BORN_K), t=parse(todayK);
+  let d=new Date(t.getFullYear(), t.getMonth(), born.getDate());
+  if(keyOf(d)<todayK) d=new Date(t.getFullYear(), t.getMonth()+1, born.getDate());
+  if(d.getMonth()===born.getMonth()) d=new Date(d.getFullYear(), d.getMonth()+1, born.getDate()); // 生日那個月改算生日
+  const n=(d.getFullYear()-born.getFullYear())*12+(d.getMonth()-born.getMonth());
+  const y=Math.floor(n/12), m=n%12;
+  return {k:keyOf(d), label:"Sushi "+(y?y+" 歲"+(m?" "+m+" 個月":""):"滿 "+m+" 個月")};
+}
+function countdownItems(){
+  const t=keyOf(new Date()), items=[];
+  const add=(emoji,name,k)=>{ const n=dayDiff(t,k); if(n>=0) items.push({emoji,name,k,n}); };
+  add("💍","結婚紀念日",nextYearly(t,"08-18"));
+  const ms=nextMonthsary(t); add("🍣",ms.label,ms.k);
+  add("🎂","霖霖生日",nextYearly(t,"05-05"));
+  add("🎂","豪豪生日",nextYearly(t,"09-04"));
+  const sb=nextYearly(t,SUSHI_BORN_K.slice(5)); add("🎂","Sushi "+(Number(sb.slice(0,4))-Number(SUSHI_BORN_K.slice(0,4)))+" 歲生日",sb);
+  add("💝","情人節",nextYearly(t,"02-14"));
+  add("💐","母親節",nextMothersDay(t));
+  add("👔","父親節",nextYearly(t,"08-08"));
+  SCHOOL_BREAKS.forEach(([nm,k,e])=>add(e,nm,k));
+  const on=holidayOn(t);
+  if(on && spanDays(on.span)>=3) items.push({emoji:"🎌",name:on.span[0]+"中",k:on.span[2],n:0,live:true});
+  else { const nx=HOLIDAYS.find(h=>h[1]>t && spanDays(h)>=3); if(nx) add("🎌",nx[0],nx[1]); }
+  return items.sort((a,b)=>a.n-b.n);
+}
+function renderCountdown(){
+  const main=$("solobar"); if(!main || !main.parentNode) return;
+  let box=$("cdbox");
+  if(!box){ box=document.createElement("section"); box.id="cdbox"; box.className="cdbox"; box.setAttribute("aria-label","倒數"); main.parentNode.insertBefore(box, main); }
+  box.textContent="";
+  const row=document.createElement("div"); row.className="cdrow";
+  countdownItems().forEach(it=>{
+    const c=document.createElement("div"); c.className="cd"+(it.n===0?" now":"");
+    const d=parse(it.k);
+    c.innerHTML='<span class="e"></span><span class="nm"></span><span class="num"></span><span class="dt"></span>';
+    c.children[0].textContent=it.emoji; c.children[1].textContent=it.name;
+    if(it.n===0){ c.children[2].textContent=it.live?"放假中":"就是今天"; }
+    else { c.children[2].textContent=it.n; const s=document.createElement("small"); s.textContent="天"; c.children[2].append(s); }
+    c.children[3].textContent=it.live?"到 "+(d.getMonth()+1)+"/"+d.getDate():(d.getMonth()+1)+"/"+d.getDate()+"（"+"日一二三四五六"[d.getDay()]+"）";
+    c.title=it.name+"・"+it.k;
+    c.onclick=()=>{ sel=it.k; view=new Date(d.getFullYear(),d.getMonth(),1); if(typeof load==="function") load(); renderMonth(); renderAgenda(); };
+    row.append(c);
+  });
+  box.append(row);
+}
+function decorateHolidays(){
+  const g=$("grid"); if(!g || typeof gridRange!=="function") return;
+  const r=gridRange();
+  [...g.children].forEach((b,i)=>{
+    const k=addDays(r.start,i), h=holidayOn(k);
+    b.classList.toggle("hol",!!h);
+    const old=b.querySelector(".hname"); if(old) old.remove();
+    if(h){ const s=document.createElement("span"); s.className="hname"; s.textContent=h.label; const n=b.querySelector(".n"); if(n) n.after(s); else b.prepend(s); }
+  });
+}
+function holidayNote(){
+  const a=$("agenda"); if(!a) return; const h=holidayOn(sel); if(!h) return;
+  const p=document.createElement("div"); p.className="holnote";
+  const s=h.span, n=spanDays(s), d1=parse(s[1]), d2=parse(s[2]);
+  p.textContent="🎌 "+(h.label!=="放假"?h.label+"・":"")+s[0]+(n>1?"（"+(d1.getMonth()+1)+"/"+d1.getDate()+"–"+(d2.getMonth()+1)+"/"+d2.getDate()+"，放 "+n+" 天）":"（放假）");
+  const h2=a.querySelector("h2"); if(h2) h2.after(p); else a.prepend(p);
+}
+{
+  const _rm=renderMonth, _ra=renderAgenda;
+  renderMonth=function(){ _rm.apply(this,arguments); decorateHolidays(); };
+  renderAgenda=function(){ _ra.apply(this,arguments); holidayNote(); };
+  renderCountdown(); decorateHolidays(); holidayNote();
+  let lastDay=keyOf(new Date());
+  document.addEventListener("visibilitychange",()=>{ if(!document.hidden && keyOf(new Date())!==lastDay){ lastDay=keyOf(new Date()); renderCountdown(); } });
+}
 })();

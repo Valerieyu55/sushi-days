@@ -115,3 +115,26 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 :root[data-theme="dark"]{--gsolo:#9fb1d0;--gsolo-bg:#262c3a;--gsolo-on:#161c2a}
 body[data-solo="g"]{--solo:var(--gsolo);--solo-bg:var(--gsolo-bg);--solo-on:var(--gsolo-on)}
 .solobar .gbig{width:56px;height:56px;border-radius:50%;background:#fff;color:#4285f4;font:700 1.9rem/56px var(--font-num,system-ui);text-align:center}
+
+/* 倒數 & 國定假日 */
+:root{--hol:#c46f7c}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--hol:#e39aa6}}
+:root[data-theme="dark"]{--hol:#e39aa6}
+.cdbox{background:none!important;border:0!important;box-shadow:none!important;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:4px 6px 16px;margin:-4px -6px -10px}
+.cdbox::-webkit-scrollbar{display:none}
+.cdrow{display:flex;gap:10px;width:max-content}
+.cd{flex:none;width:124px;padding:10px 12px 9px;border-radius:20px;display:flex;flex-direction:column;gap:1px;cursor:pointer;
+  background:var(--glass);-webkit-backdrop-filter:blur(14px) saturate(150%);backdrop-filter:blur(14px) saturate(150%);border:1px solid var(--glass-border);box-shadow:var(--glass-shadow);color:var(--ink)}
+.cd .e{font-size:1.15rem;line-height:1.2}
+.cd .nm{font-size:.78rem;line-height:1.3;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.6em}
+.cd .num{font-family:var(--font-num);font-weight:600;font-size:1.65rem;line-height:1.15;color:var(--accent);font-variant-numeric:tabular-nums}
+.cd .num small{font-size:.72rem;font-weight:500;color:var(--muted);margin-left:3px}
+.cd .dt{font-size:.7rem;color:var(--muted)}
+.cd.now{background:linear-gradient(135deg,var(--accent-2),var(--accent));color:var(--accent-on)}
+.cd.now .nm,.cd.now .dt,.cd.now .num{color:var(--accent-on)}
+.cd.now .num{font-size:1.05rem;padding:6px 0 4px}
+.day.hol .n{color:var(--hol)}
+.day.hol{background:color-mix(in srgb,var(--hol) 9%,transparent)}
+.day.hol.today .n{color:var(--today-on)}
+.day .hname{font-size:.56rem;line-height:1.1;color:var(--hol);white-space:nowrap;overflow:hidden;max-width:100%;margin-top:-2px}
+.holnote{font-size:.85rem;color:var(--hol);background:color-mix(in srgb,var(--hol) 10%,var(--paper));border:1px solid color-mix(in srgb,var(--hol) 25%,transparent);border-radius:14px;padding:8px 12px;margin:-2px 0 4px}
