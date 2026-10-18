@@ -843,4 +843,122 @@ function styleNavButtons(){
   let lastDay=keyOf(new Date());
   document.addEventListener("visibilitychange",()=>{ if(!document.hidden && keyOf(new Date())!==lastDay){ lastDay=keyOf(new Date()); renderCountdown(); } });
 }
+
+/* ================= 打開時的提醒 & 倒數到了的大畫面 ================= */
+function dayItems(k){
+  let fam=[], g=[];
+  if(typeof eventsOn==="function"){ fam=eventsOn(k); try{ g=gOn(gFam,k).concat(gOn(gMine,k)); }catch(e){} }
+  else { fam=famOn(k); g=mineOn(k); }
+  const mk=(e,isG)=>({allDay:!!e.allDay, start:e.start||"", end:e.end||"", title:isG?e.title:titleOn(e,k), members:isG?[]:(e.members||[]), g:isG});
+  return fam.map(e=>mk(e,false)).concat(g.map(e=>mk(e,true))).sort((a,b)=>a.allDay===b.allDay?a.start.localeCompare(b.start):(a.allDay?-1:1));
+}
+const hhmm = d => String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");
+function mdLabel(k){ const d=parse(k); return (d.getMonth()+1)+"/"+d.getDate()+"（"+"日一二三四五六"[d.getDay()]+"）"; }
+function briefRow(it, now){
+  const r=document.createElement("div"); r.className="brow"+(it.g?" g":"");
+  const t=document.createElement("span"); t.className="bt";
+  const live=!it.allDay && now && it.start<=now && (it.end||it.start)>now;
+  t.textContent= it.allDay?"整天":(live?"進行中":it.start);
+  if(live) t.classList.add("live");
+  const tx=document.createElement("span"); tx.className="btx"; tx.textContent=it.title;
+  const who=document.createElement("span"); who.className="bwho";
+  if(it.g){ const s=document.createElement("span"); s.className="bg"; s.textContent="G"; who.append(s); }
+  else (it.members.length?it.members:["mom","dad","sushi"]).filter(m=>M[m]).slice(0,3).forEach(m=>who.append(svgEl(m,22)));
+  r.append(t,tx,who); return r;
+}
+let briefEl=null;
+function fillBrief(){
+  if(!briefEl) return;
+  const box=briefEl.querySelector(".bbody"); box.textContent="";
+  const today=keyOf(new Date()), tmr=addDays(today,1), now=hhmm(new Date());
+  const sec=(title, sub, rows, empty, extra)=>{
+    const s=document.createElement("section"); s.className="bsec";
+    const h=document.createElement("h3"); h.textContent=title; if(sub){ const sm=document.createElement("small"); sm.textContent=sub; h.append(sm); } s.append(h);
+    (extra||[]).forEach(x=>s.append(x));
+    if(rows.length) rows.forEach(r=>s.append(r));
+    else if(!(extra||[]).length){ const p=document.createElement("p"); p.className="bempty"; p.textContent=empty; s.append(p); }
+    box.append(s);
+  };
+  const tag=k=>{ const out=[]; const h=holidayOn(k); if(h){ const p=document.createElement("div"); p.className="btag"; p.append(iconEl("lantern",20), document.createTextNode(h.label!=="放假"?h.label+"・"+h.span[0]:h.span[0])); out.push(p); }
+    specialsOn(k).forEach(x=>{ const p=document.createElement("div"); p.className="btag"; p.append(iconEl(x.ic,20), document.createTextNode(x.name)); out.push(p); }); return out; };
+  const upcoming=dayItems(today).filter(it=>it.allDay || (it.end||it.start)>now);
+  sec("今天接下來", mdLabel(today), upcoming.map(it=>briefRow(it,now)), "今天接下來沒有行程，好好休息一下", tag(today));
+  sec("明天", mdLabel(tmr), dayItems(tmr).map(it=>briefRow(it,null)), "明天還沒有行程", tag(tmr));
+}
+function showBrief(){
+  if(briefEl) { fillBrief(); return; }
+  const ov=document.createElement("div"); ov.className="ov"; ov.setAttribute("role","dialog"); ov.setAttribute("aria-modal","true"); ov.setAttribute("aria-label","今天和明天的行程");
+  const card=document.createElement("div"); card.className="brief";
+  const hd=document.createElement("div"); hd.className="bhead";
+  const hi=document.createElement("div"); hi.className="bhi";
+  const hr=new Date().getHours(), greet= hr<11?"早安":hr<14?"午安":hr<18?"午安":"晚安";
+  hi.innerHTML="<strong></strong><small>這是接下來的行程</small>"; hi.firstChild.textContent=greet+"，"+((M[me]&&M[me].name)||"")+"！";
+  hd.append(svgEl(M[me]?me:"sushi",48), hi);
+  const body=document.createElement("div"); body.className="bbody";
+  const ok=document.createElement("button"); ok.type="button"; ok.className="bok"; ok.textContent="知道了";
+  card.append(hd, body, ok); ov.append(card); document.body.append(ov);
+  briefEl=ov; fillBrief();
+  const close=()=>{ ov.classList.add("out"); setTimeout(()=>{ ov.remove(); },220); briefEl=null; };
+  ok.onclick=close; ov.addEventListener("click",e=>{ if(e.target===ov) close(); });
+  document.addEventListener("keydown",function esc(e){ if(e.key==="Escape"){ close(); document.removeEventListener("keydown",esc); } });
+  setTimeout(()=>ok.focus({preventScroll:true}),60);
+}
+function celebrationsToday(){
+  const t=keyOf(new Date());
+  return countdownItems().filter(it=>it.n===0 && (!it.live || (holidayOn(t)&&holidayOn(t).span[1]===t)));
+}
+function celebrateText(it){
+  if(it.ic==="ring") return ["結婚紀念日快樂！","霖霖和豪豪，又一起走過一年"];
+  if(it.ic==="sushi") return [it.name+"啦！","Sushi 又長大一個月了"];
+  if(it.ic.startsWith("cake:")) return [it.name.replace("生日","")+"生日快樂！","今天是特別的日子"];
+  if(it.ic==="heart") return ["情人節快樂！","今天要甜甜的"];
+  if(it.ic==="flower") return ["母親節快樂！","霖霖辛苦了"];
+  if(it.ic==="tie") return ["父親節快樂！","豪豪辛苦了"];
+  if(it.ic==="snow"||it.ic==="sun") return [it.name+"開始囉！","好好放假"];
+  if(it.ic==="lantern") return [(it.name.replace(/中$/,""))+"開始囉！","連假愉快"];
+  return ["今天是"+it.name+"！",""];
+}
+function showCelebrate(list, done){
+  const it=list[0];
+  const ov=document.createElement("div"); ov.className="celebrate"; ov.setAttribute("role","dialog"); ov.setAttribute("aria-modal","true");
+  const conf=document.createElement("div"); conf.className="confetti"; conf.setAttribute("aria-hidden","true");
+  const cols=["#f2a0b7","#c9a2d0","#9fbfac","#ffd47e","#b59680","#8fa9c6"];
+  for(let i=0;i<46;i++){ const s=document.createElement("i"); s.style.left=(Math.random()*100)+"%"; s.style.background=cols[i%cols.length];
+    s.style.animationDuration=(3.2+Math.random()*3)+"s"; s.style.animationDelay=(-Math.random()*5)+"s"; s.style.transform="rotate("+(Math.random()*360)+"deg)";
+    if(i%3===0){ s.style.borderRadius="50%"; s.style.height="9px"; } conf.append(s); }
+  const big=document.createElement("div"); big.className="cbig"; big.append(iconEl(it.ic,150));
+  const [title,sub]=celebrateText(it);
+  const h=document.createElement("h2"); h.textContent=title;
+  const p=document.createElement("p"); p.textContent=sub;
+  const more=document.createElement("p"); more.className="cmore"; if(list.length>1) more.textContent="今天還有："+list.slice(1).map(x=>x.name).join("、");
+  const ok=document.createElement("button"); ok.type="button"; ok.className="bok"; ok.textContent="好開心！";
+  ov.append(conf,big,h,p,more,ok); document.body.append(ov);
+  if(navigator.vibrate) try{ navigator.vibrate([60,40,60]); }catch(e){}
+  ok.onclick=()=>{ ov.classList.add("out"); setTimeout(()=>{ ov.remove(); done&&done(); },260); };
+  setTimeout(()=>ok.focus({preventScroll:true}),60);
+}
+function openGreeting(){
+  const g=$("grid");
+  if(!g || g.offsetParent===null){ if((openGreeting.tries=(openGreeting.tries||0)+1)<40) setTimeout(openGreeting,1000); return; }
+  openGreeting.tries=0;
+  const t=keyOf(new Date());
+  let seen={}; try{ seen=JSON.parse(localStorage.getItem("cd.celebrated")||"{}"); }catch(e){}
+  if(seen.d!==t) seen={d:t,k:[]};
+  const due=celebrationsToday().filter(it=>!seen.k.includes(it.ic+"|"+it.name));
+  const brief=()=>setTimeout(showBrief,150);
+  if(due.length){
+    seen.k=seen.k.concat(due.map(it=>it.ic+"|"+it.name)); try{ localStorage.setItem("cd.celebrated",JSON.stringify(seen)); }catch(e){}
+    showCelebrate(due, brief);
+  } else brief();
+}
+{
+  const _ra2=renderAgenda;
+  renderAgenda=function(){ _ra2.apply(this,arguments); if(briefEl) fillBrief(); };
+  setTimeout(openGreeting, 1200);
+  let hiddenAt=0;
+  document.addEventListener("visibilitychange",()=>{
+    if(document.hidden){ hiddenAt=Date.now(); return; }
+    if(hiddenAt && Date.now()-hiddenAt>20*60*1000 && !briefEl && !document.querySelector(".celebrate")) setTimeout(openGreeting,800);
+  });
+}
 })();
