@@ -1020,4 +1020,35 @@ function holidayCheer(){
     el.append(iconEl("lantern",34), tx); box.prepend(el);
   };
 }
+
+/* 選人卡片搬到原本「全家的行事曆」橫幅的位置 */
+function dockCrew(){
+  const crew=$("crew"), bar=$("solobar"); if(!crew || !bar || !bar.parentNode) return;
+  let dock=$("crewdock");
+  if(!dock){
+    dock=document.createElement("section"); dock.id="crewdock"; dock.className="crewdock"; dock.setAttribute("aria-label","看誰的行程");
+    const cap=document.createElement("div"); cap.className="dockcap"; cap.id="dockcap";
+    cap.innerHTML='<span class="dc-tx"><strong></strong><small></small></span><button type="button" class="dc-btn" hidden></button>';
+    cap.querySelector(".dc-btn").onclick=()=>{ const b=$("solo-back"); if(b) b.click(); };
+    dock.append(cap);
+    bar.parentNode.insertBefore(dock, bar);
+  }
+  if(crew.parentNode!==dock) dock.prepend(crew);
+}
+function updateDockCap(){
+  const cap=$("dockcap"); if(!cap) return;
+  const nm=$("solo-name"), sb=$("solo-sub"), back=$("solo-back"), bar=$("solobar");
+  const show=bar && !bar.hidden;
+  cap.hidden=!show;
+  cap.querySelector("strong").textContent=nm?nm.textContent:"";
+  cap.querySelector("small").textContent=sb?sb.textContent:"";
+  const b=cap.querySelector(".dc-btn"); b.hidden=!back || back.hidden; b.textContent=back?back.textContent:"";
+}
+{
+  const _rme2=renderMe;
+  renderMe=function(){ _rme2.apply(this,arguments); dockCrew(); };
+  const _as=applySolo;
+  applySolo=function(){ _as.apply(this,arguments); updateDockCap(); };
+  dockCrew(); updateDockCap();
+}
 })();
