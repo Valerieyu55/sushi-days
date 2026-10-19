@@ -1051,4 +1051,25 @@ function updateDockCap(){
   applySolo=function(){ _as.apply(this,arguments); updateDockCap(); };
   dockCrew(); updateDockCap();
 }
+
+/* 提醒框：今日不再顯示 */
+const BRIEF_HIDE_KEY="brief.hideDay";
+function briefHiddenToday(){ try{ return localStorage.getItem(BRIEF_HIDE_KEY)===keyOf(new Date()); }catch(e){ return false; } }
+{
+  const _sb=showBrief;
+  showBrief=function(){
+    if(!briefEl && briefHiddenToday()) return;
+    const had=!!briefEl;
+    _sb.apply(this,arguments);
+    if(had || !briefEl) return;
+    const card=briefEl.querySelector(".brief"), ok=briefEl.querySelector(".bok");
+    if(!card || !ok || card.querySelector(".bskip")) return;
+    const row=document.createElement("label"); row.className="bskip";
+    const cb=document.createElement("input"); cb.type="checkbox"; cb.id="brief-skip";
+    const tx=document.createElement("span"); tx.textContent="今日不再顯示";
+    row.append(cb,tx); card.insertBefore(row, ok);
+    ok.addEventListener("click",()=>{ try{ if(cb.checked) localStorage.setItem(BRIEF_HIDE_KEY,keyOf(new Date())); else localStorage.removeItem(BRIEF_HIDE_KEY); }catch(e){} });
+    briefEl.addEventListener("click",e=>{ if(e.target===briefEl && cb.checked){ try{ localStorage.setItem(BRIEF_HIDE_KEY,keyOf(new Date())); }catch(err){} } });
+  };
+}
 })();

@@ -250,3 +250,10 @@ body[data-solo="g"]{--solo:var(--gsolo);--solo-bg:var(--gsolo-bg);--solo-on:var(
 .dc-tx small{display:block;font-size:.76rem;color:var(--muted)}
 .dc-btn{flex:none;border-radius:999px;padding:6px 14px;min-height:36px;font:inherit;font-size:.82rem;color:var(--ink);background:var(--glass-strong);border:1px solid var(--glass-border);box-shadow:var(--glass-shadow)}
 .dc-btn[hidden]{display:none}
+
+/* 今日不再顯示 */
+.bskip{display:flex;align-items:center;justify-content:center;gap:8px;margin:12px 0 -2px;font-size:.88rem;color:var(--muted);cursor:pointer;user-select:none;-webkit-user-select:none}
+.bskip input{appearance:none;-webkit-appearance:none;width:20px;height:20px;margin:0;border-radius:7px;border:1.5px solid color-mix(in srgb,var(--accent) 60%,transparent);background:var(--glass);display:grid;place-items:center;cursor:pointer}
+.bskip input:checked{background:var(--accent);border-color:var(--accent)}
+.bskip input:checked::after{content:"";width:5px;height:10px;border:solid var(--accent-on);border-width:0 2.2px 2.2px 0;transform:translateY(-1px) rotate(45deg)}
+.bskip input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
