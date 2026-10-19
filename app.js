@@ -1066,4 +1066,172 @@ function briefHiddenToday(){ try{ return localStorage.getItem(BRIEF_HIDE_KEY)===
     briefEl.addEventListener("click",e=>{ if(e.target===briefEl && cb.checked){ try{ localStorage.setItem(BRIEF_HIDE_KEY,keyOf(new Date())); }catch(err){} } });
   };
 }
+
+/* ================= 行程小圖 & 便利貼 ================= */
+const STK = [
+  ["bento","領便當",'<rect x="4" y="11" width="24" height="15" rx="4" fill="#f6d9b8" '+IC_O+'/><path d="M4 15h24" '+IC_O+'/><rect x="6.5" y="17" width="9" height="7" rx="2" fill="#fff" '+IC_O+'/><circle cx="20.5" cy="20.5" r="3" fill="#ffd47e" '+IC_O+'/><circle cx="20.5" cy="20.5" r="1.2" fill="#f2a24a"/><path d="M8 8.5h16l2 2.5H6z" fill="#e9a0ad" '+IC_O+'/>'],
+  ["tooth","牙醫",'<path d="M9 6c3-1.2 4.8.6 7 .6S20 4.8 23 6c3.6 1.4 3 6.8 1.6 10.6-1 2.8-1.2 6-2 8.6-.6 2-2.4 2-3-.2l-1.4-4.8c-.4-1.2-2-1.2-2.4 0l-1.4 4.8c-.6 2.2-2.4 2.2-3 .2-.8-2.6-1-5.8-2-8.6C6 12.8 5.4 7.4 9 6z" fill="#fff" '+IC_O+'/><circle cx="13" cy="12.5" r="1" fill="'+IC_FACE+'"/><circle cx="19" cy="12.5" r="1" fill="'+IC_FACE+'"/><path d="M14.6 15q1.4 1.2 2.8 0" fill="none" '+IC_O+'/>'],
+  ["doctor","看醫生",'<rect x="5" y="5" width="22" height="22" rx="7" fill="#fff" '+IC_O+'/><path d="M13.5 9.5h5v4h4v5h-4v4h-5v-4h-4v-5h4z" fill="#ef8f9c" '+IC_O+'/>'],
+  ["car","車子",'<path d="M5 20v-3.5c0-1 .6-1.8 1.5-2.1L9 13.5l2.6-4c.5-.7 1.2-1 2-1h5.2c.8 0 1.5.4 1.9 1l2.6 4 2.5.9c.9.3 1.5 1.1 1.5 2.1V20c0 1.1-.9 2-2 2H7c-1.1 0-2-.9-2-2z" fill="#9fb8d6" '+IC_O+'/><path d="M11.4 13.5l2-3h5.2l2 3z" fill="#fff" '+IC_O+'/><circle cx="10" cy="22" r="2.8" fill="#fff" '+IC_O+'/><circle cx="22" cy="22" r="2.8" fill="#fff" '+IC_O+'/>'],
+  ["cart","購物",'<path d="M3.5 6h3.2l3 13.2h13.2l3-9.6H8" fill="none" '+IC_O+'/><path d="M8.6 9.6h17.3l-3 9.6H10.8z" fill="#cfe0d4" '+IC_O+'/><circle cx="11.5" cy="24.5" r="2" fill="#fff" '+IC_O+'/><circle cx="21.5" cy="24.5" r="2" fill="#fff" '+IC_O+'/>'],
+  ["money","繳費",'<circle cx="16" cy="16" r="11" fill="#ffd47e" '+IC_O+'/><circle cx="16" cy="16" r="7.6" fill="none" stroke="#e7a93f" stroke-width="1.4"/><path d="M18.6 12.4c-.6-.9-1.6-1.3-2.6-1.3-1.6 0-2.8.8-2.8 2.1 0 2.9 5.8 1.5 5.8 4.6 0 1.4-1.3 2.2-3 2.2-1.2 0-2.3-.5-2.9-1.4M16 9.6v1.5M16 20v1.6" fill="none" stroke="#9a6418" stroke-width="1.6" stroke-linecap="round"/>'],
+  ["ball","運動",'<circle cx="16" cy="16" r="11" fill="#f4a261" '+IC_O+'/><path d="M5 16h22M16 5v22M8.2 8.2c3.4 3.6 3.4 12 0 15.6M23.8 8.2c-3.4 3.6-3.4 12 0 15.6" fill="none" stroke="#7a3e14" stroke-width="1.3"/>'],
+  ["book","上課",'<path d="M4 8.5c4-1.6 8-1.6 12 .8 4-2.4 8-2.4 12-.8V25c-4-1.6-8-1.6-12 .8-4-2.4-8-2.4-12-.8z" fill="#fff" '+IC_O+'/><path d="M16 9.3v16.5" '+IC_O+'/><path d="M7 12.5c2.4-.6 4.6-.4 6.4.4M7 16.5c2.4-.6 4.6-.4 6.4.4M19 12.9c1.8-.8 4-1 6.4-.4M19 16.9c1.8-.8 4-1 6.4-.4" stroke="#b48bb8" stroke-width="1.3" stroke-linecap="round" fill="none"/>'],
+  ["plane","出遊",'<path d="M27.5 6.5c-1.2-1.2-3-1-4.2.2L19 11 8.2 8.2 6 10.4l8.6 5.2-3.8 4-3.4-.6L6 20.4l4.2 2 2 4.2 1.4-1.4-.6-3.4 4-3.8 5.2 8.6 2.2-2.2L21.6 13l4.3-4.3c1.2-1.2 1.4-3 .2-4.2z" fill="#a9c7e0" '+IC_O+'/>'],
+  ["party","慶祝",'<path d="M6 27 11 11l10 10z" fill="#ffd47e" '+IC_O+'/><path d="M9.4 16.5l6.2 6.2M7.6 22l3.6 3.6" stroke="#e9a0ad" stroke-width="1.6" stroke-linecap="round"/><path d="M18 6.5c.8 1.6.4 3-1.2 4M24 9c-1.8.2-3 1.2-3.2 3M25.5 15.5c-1.6-.6-3-.2-4 1.2" fill="none" stroke="#c49ac4" stroke-width="1.6" stroke-linecap="round"/><circle cx="22" cy="5" r="1.3" fill="#9fbfac"/><circle cx="27" cy="12" r="1.3" fill="#ef8f9c"/>'],
+  ["phone","打電話",'<path d="M10.5 4.5l3 6.3-2.6 2.2c1.6 3.4 4 5.8 7.4 7.4l2.2-2.6 6.3 3-1 3.8c-.3 1.1-1.3 1.9-2.5 1.8C13.6 25.5 6.5 18.4 5.6 8.7c-.1-1.2.7-2.2 1.8-2.5z" fill="#cfe0d4" '+IC_O+'/>'],
+  ["star","重要",'<path d="M16 4.2l3.5 7.2 7.9 1.1-5.7 5.6 1.4 7.8L16 22.2l-7.1 3.7 1.4-7.8-5.7-5.6 7.9-1.1z" fill="#ffd47e" '+IC_O+'/><circle cx="13.6" cy="15" r=".95" fill="'+IC_FACE+'"/><circle cx="18.4" cy="15" r=".95" fill="'+IC_FACE+'"/><path d="M14.8 17.4q1.2 1 2.4 0" fill="none" '+IC_O+'/>']
+];
+const STK_MAP = Object.fromEntries(STK.map(s=>[s[0],s]));
+function stickerEl(key,w){
+  const s=STK_MAP[key]; if(!s) return null;
+  const t=document.createElement("template");
+  t.innerHTML='<svg viewBox="0 0 32 32" width="'+w+'" height="'+w+'" class="stk" aria-hidden="true">'+s[2]+'</svg>';
+  return t.content.firstChild;
+}
+/* 讀寫：小圖存在 Google 行程的共用欄位，豪豪也看得到 */
+let curSticker="";
+{
+  const _me=mapEvent;
+  mapEvent=function(e,src){
+    const sh=(e&&e.extendedProperties&&e.extendedProperties.shared)||{};
+    if(sh.kind==="memo") return null;
+    const r=_me.apply(this,arguments); if(r) r.sticker=STK_MAP[sh.sticker]?sh.sticker:""; return r;
+  };
+  const _bf=bodyFor;
+  bodyFor=function(d){ const b=_bf.apply(this,arguments); b.extendedProperties.shared.sticker=curSticker||""; return b; };
+}
+function renderStickerPicker(){
+  let box=$("f-stk");
+  if(!box){
+    const field=document.createElement("div"); field.className="field";
+    field.innerHTML='<span class="lbl">小圖（豪豪和霖霖都看得到；只選小圖不打字也可以）</span><div class="stkpick" id="f-stk" role="radiogroup" aria-label="小圖"></div>';
+    const t=$("f-title"); const tf=t && t.closest(".field"); if(tf) tf.after(field); else $("form").prepend(field);
+    box=$("f-stk");
+  }
+  box.textContent="";
+  STK.forEach(([k,name])=>{
+    const b=document.createElement("button"); b.type="button"; b.className="stkb"; b.setAttribute("role","radio");
+    b.setAttribute("aria-checked", String(curSticker===k)); b.setAttribute("aria-label",name); b.title=name;
+    b.append(stickerEl(k,28)); const s=document.createElement("span"); s.textContent=name; b.append(s);
+    b.onclick=()=>{ curSticker = curSticker===k ? "" : k; renderStickerPicker(); };
+    box.append(b);
+  });
+}
+{
+  const _os=openSheet;
+  openSheet=function(ev,prefill){ curSticker = ev&&ev.sticker ? ev.sticker : (prefill&&prefill.sticker)||""; _os.apply(this,arguments); renderStickerPicker(); };
+  const _fd=formData;
+  formData=function(){ const t=$("f-title"); if(t && !t.value.trim() && curSticker) t.value=STK_MAP[curSticker][1]; return _fd.apply(this,arguments); };
+}
+/* 顯示：月曆格子、當天卡片、打開提醒 */
+function decorateStickers(){
+  const g=$("grid"); if(g && typeof gridRange==="function"){
+    const r=gridRange();
+    [...g.children].forEach((b,i)=>{
+      const k=addDays(r.start,i); const list=famOn(k).slice(0,3);
+      const bars=[...b.querySelectorAll(".bars b:not(.sp)")];
+      list.forEach((ev,j)=>{ const bar=bars[j]; if(!bar || !ev.sticker || bar.querySelector(".stk")) return; const ic=stickerEl(ev.sticker,13); bar.prepend(ic); bar.classList.add("hasstk"); });
+    });
+  }
+}
+function decorateAgendaStickers(){
+  const a=$("agenda"); if(!a) return;
+  const list=famOn(sel), cards=[...a.querySelectorAll(".ev.famcard")];
+  list.forEach((ev,j)=>{ const c=cards[j]; if(!c || !ev.sticker || c.querySelector(".stkbig")) return;
+    const w=document.createElement("span"); w.className="stkbig"; w.append(stickerEl(ev.sticker,24)); const ti=c.querySelector(".title"); if(ti) ti.prepend(w); });
+}
+{
+  const _rm3=renderMonth, _ra3=renderAgenda;
+  renderMonth=function(){ _rm3.apply(this,arguments); decorateStickers(); };
+  renderAgenda=function(){ _ra3.apply(this,arguments); decorateAgendaStickers(); };
+  dayItems=function(k){
+    const fam=famOn(k), g=mineOn(k);
+    const mk=(e,isG)=>({allDay:!!e.allDay, start:e.start||"", end:e.end||"", title:isG?e.title:titleOn(e,k), members:isG?[]:(e.members||[]), g:isG, sticker:isG?"":(e.sticker||"")});
+    return fam.map(e=>mk(e,false)).concat(g.map(e=>mk(e,true))).sort((a,b)=>a.allDay===b.allDay?a.start.localeCompare(b.start):(a.allDay?-1:1));
+  };
+  const _br=briefRow;
+  briefRow=function(it,now){ const r=_br.apply(this,arguments); if(it.sticker){ const ic=stickerEl(it.sticker,22); ic.classList.add("bstk"); const tx=r.querySelector(".btx"); if(tx) tx.before(ic); } return r; };
+}
+
+/* ---------- 便利貼（存在 Google「家庭」日曆，兩個人都看得到） ---------- */
+let memos=[], memoOpen=false;
+function memoBody(text){
+  const k=keyOf(new Date());
+  return { summary:"便利貼："+text, start:{date:k}, end:{date:addDays(k,1)}, transparency:"transparent",
+    description:(M[me]?M[me].name:"")+" 留的便利貼（Sushi 家 app）", reminders:{useDefault:false,overrides:[]},
+    extendedProperties:{shared:{kind:"memo", by:me, text:text, at:String(Date.now()), app:"sushi"}} };
+}
+async function loadMemos(){
+  if(!famCal) return;
+  try{
+    const since=new Date(Date.now()-400*86400000).toISOString();
+    const q=new URLSearchParams({sharedExtendedProperty:"kind=memo", timeMin:since, maxResults:"200", singleEvents:"true"});
+    const r=await api(calPath(famCal)+"?"+q.toString());
+    memos=((r&&r.items)||[]).filter(e=>e.status!=="cancelled").map(e=>{ const sh=(e.extendedProperties&&e.extendedProperties.shared)||{};
+      return {id:e.id, text:sh.text||String(e.summary||"").replace(/^便利貼：/,""), by:M[sh.by]?sh.by:"", at:Number(sh.at)||Date.parse(e.created)||0}; })
+      .sort((a,b)=>b.at-a.at);
+    try{ store.set("sc.memos",memos); }catch(e){}
+    renderMemos(); if(briefEl) fillBrief();
+  }catch(e){ if(e&&e.code==="auth") return; }
+}
+function memoTime(at){ const d=new Date(at), t=keyOf(new Date()), k=keyOf(d);
+  const hm=String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");
+  return k===t ? "今天 "+hm : k===addDays(t,-1) ? "昨天 "+hm : (d.getMonth()+1)+"/"+d.getDate(); }
+function memoCard(m, compact){
+  const c=document.createElement("div"); c.className="memo m-"+(m.by||"x");
+  if(m.by) c.append(svgEl(m.by,compact?22:26));
+  const tx=document.createElement("div"); tx.className="mtx";
+  const p=document.createElement("p"); p.textContent=m.text;
+  const s=document.createElement("small"); s.textContent=(m.by?M[m.by].name+"・":"")+memoTime(m.at);
+  tx.append(p,s); c.append(tx);
+  if(!compact){
+    const done=document.createElement("button"); done.type="button"; done.className="mdone"; done.setAttribute("aria-label","完成，撕掉這張便利貼"); done.title="完成";
+    done.innerHTML='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+    done.onclick=async()=>{ c.classList.add("bye"); try{ await api(calPath(famCal,m.id),{method:"DELETE"}); }catch(e){} memos=memos.filter(x=>x.id!==m.id); setTimeout(renderMemos,200); toast("撕掉了：「"+m.text+"」"); };
+    c.append(done);
+  }
+  return c;
+}
+function renderMemos(){
+  const anchor=$("cdbox")||$("crewdock")||$("solobar"); if(!anchor||!anchor.parentNode) return;
+  let box=$("memobox");
+  if(!box){
+    box=document.createElement("section"); box.id="memobox"; box.className="memobox"; box.setAttribute("aria-label","便利貼");
+    box.innerHTML='<div class="mhead"><strong>便利貼</strong><small id="memo-count"></small></div>'+
+      '<form class="madd" id="memo-form"><input type="text" id="memo-in" maxlength="80" autocomplete="off" enterkeyhint="send"><button type="submit">貼上</button></form><div class="mlist" id="memo-list"></div>';
+    anchor.parentNode.insertBefore(box, anchor);
+    $("memo-form").addEventListener("submit",async e=>{
+      e.preventDefault(); const inp=$("memo-in"), text=inp.value.trim(); if(!text) return;
+      if(!famCal){ toast("還沒連上 Google「家庭」日曆"); return; }
+      inp.value=""; const tmp={id:"tmp"+Date.now(), text, by:me, at:Date.now()}; memos.unshift(tmp); renderMemos();
+      try{ const r=await api(calPath(famCal),{method:"POST",body:memoBody(text)}); tmp.id=r.id; toast("貼好了，"+(me==="dad"?"霖霖":"豪豪")+"打開就看得到"); }
+      catch(err){ memos=memos.filter(x=>x!==tmp); renderMemos(); inp.value=text; toast("沒貼上，請再試一次"); }
+    });
+  }
+  const other = me==="dad" ? "霖霖" : "豪豪";
+  $("memo-in").placeholder="寫給"+other+"…（例：記得領便當）";
+  $("memo-count").textContent = memos.length ? memos.length+" 張" : "";
+  const list=$("memo-list"); list.textContent="";
+  const show = memoOpen ? memos : memos.slice(0,3);
+  show.forEach(m=>list.append(memoCard(m,false)));
+  if(memos.length>3){ const more=document.createElement("button"); more.type="button"; more.className="mmore"; more.textContent= memoOpen ? "收起來" : "還有 "+(memos.length-3)+" 張"; more.onclick=()=>{ memoOpen=!memoOpen; renderMemos(); }; list.append(more); }
+  if(!memos.length){ const p=document.createElement("p"); p.className="mempty"; p.textContent="還沒有便利貼，寫一句話提醒對方吧"; list.append(p); }
+}
+{
+  const _ld=load;
+  load=async function(){ const r=await _ld.apply(this,arguments); loadMemos(); return r; };
+  const _fb2=fillBrief;
+  fillBrief=function(){
+    _fb2.apply(this,arguments);
+    if(!briefEl || !memos.length) return; const box=briefEl.querySelector(".bbody"); if(!box) return;
+    const s=document.createElement("section"); s.className="bsec bmemo";
+    const h=document.createElement("h3"); h.textContent="便利貼"; const sm=document.createElement("small"); sm.textContent=memos.length+" 張"; h.append(sm); s.append(h);
+    memos.slice(0,4).forEach(m=>s.append(memoCard(m,true)));
+    const cheer=box.querySelector(".cheer"); if(cheer) cheer.after(s); else box.prepend(s);
+  };
+  try{ memos=store.get("sc.memos",[])||[]; }catch(e){ memos=[]; }
+  renderMemos();
+  if(famCal && tokenValid()) loadMemos();
+}
 })();

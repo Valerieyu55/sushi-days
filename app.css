@@ -257,3 +257,37 @@ body[data-solo="g"]{--solo:var(--gsolo);--solo-bg:var(--gsolo-bg);--solo-on:var(
 .bskip input:checked{background:var(--accent);border-color:var(--accent)}
 .bskip input:checked::after{content:"";width:5px;height:10px;border:solid var(--accent-on);border-width:0 2.2px 2.2px 0;transform:translateY(-1px) rotate(45deg)}
 .bskip input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* 行程小圖 */
+.stkpick{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
+.stkb{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 2px 5px;border-radius:14px;border:1px solid var(--glass-border);background:var(--glass);font:inherit;font-size:.66rem;color:var(--muted);min-width:0;touch-action:manipulation}
+.stkb span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.stkb[aria-checked="true"]{background:var(--glass-strong);border-color:var(--accent);box-shadow:inset 0 0 0 1.5px var(--accent);color:var(--ink);font-weight:600}
+.stkb svg{pointer-events:none}
+.day .bars b.hasstk{display:flex;align-items:center;gap:2px;padding-left:2px}
+.day .bars b .stk{flex:none}
+.stkbig{display:inline-block;vertical-align:-6px;margin-right:6px}
+.stkbig svg{display:block}
+.brow .bstk{flex:none;margin-right:-4px}
+/* 便利貼 */
+.memobox{border-radius:24px;padding:12px 12px 10px;background:var(--paper);-webkit-backdrop-filter:blur(18px) saturate(140%);backdrop-filter:blur(18px) saturate(140%);border:1px solid var(--glass-border);box-shadow:var(--shadow)}
+.mhead{display:flex;align-items:baseline;gap:8px;padding:0 4px 8px}
+.mhead strong{font-family:var(--font-display);font-weight:400;font-size:1.1rem}
+.mhead small{color:var(--muted);font-size:.78rem}
+.madd{display:flex;gap:8px;margin-bottom:8px}
+.madd input{flex:1;min-width:0;min-height:42px;border-radius:999px;padding:0 16px;font:inherit;font-size:.95rem;color:var(--ink);background:var(--glass);border:1px solid var(--glass-border)}
+.madd input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 25%,transparent)}
+.madd button{flex:none;min-height:42px;padding:0 18px;border-radius:999px;font:inherit;font-weight:600;color:var(--accent-on);border:1px solid var(--glass-border);background:linear-gradient(135deg,var(--accent),var(--accent-2));box-shadow:0 6px 16px color-mix(in srgb,var(--accent) 30%,transparent)}
+.mlist{display:flex;flex-direction:column;gap:6px}
+.memo{display:flex;align-items:center;gap:10px;padding:9px 8px 9px 10px;border-radius:16px;background:#fff8d9;border:1px solid rgba(214,180,90,.35);box-shadow:0 3px 8px rgba(160,130,60,.12);transition:opacity .2s,transform .2s}
+.memo.m-mom{background:#f6eaf7;border-color:color-mix(in srgb,var(--mom) 40%,transparent)}
+.memo.m-dad{background:#e8f1eb;border-color:color-mix(in srgb,var(--dad) 45%,transparent)}
+.memo.bye{opacity:0;transform:translateX(30px)}
+.memo>svg{flex:none}
+.mtx{flex:1;min-width:0}
+.mtx p{margin:0;color:#3a3442;font-size:.95rem;line-height:1.35;word-break:break-word}
+.mtx small{color:#857d8c;font-size:.72rem}
+.mdone{flex:none;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;color:var(--accent);background:rgba(255,255,255,.7);border:1px solid var(--glass-border)}
+.mmore{align-self:center;border:0;background:none;color:var(--muted);font:inherit;font-size:.82rem;padding:4px 10px}
+.mempty{margin:2px 6px;color:var(--muted);font-size:.86rem}
+.bmemo .memo{margin-bottom:6px}
