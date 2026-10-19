@@ -452,7 +452,7 @@ function openSheet(ev, prefill){
   setAllDay(!!p.allDay, p.remind!=null ? p.remind : (p.allDay?240:30));
   draftWho = (p.members && p.members.length ? p.members : (membersFor(p.title)||[me])).slice(); whoTouched=false;
   renderWho(); renderColors();
-  $("f-gnote").textContent = ev && ev.base ? "這是重複行程：修改會套用到每一次（日期不能改）；刪除時可以選只刪這一天。" : (moveFrom ? "會從你的個人 Google 日曆移到「家庭」日曆，不會變成兩筆。" : "儲存後會出現在 Google「家庭」日曆，提醒由 Google 日曆發出。");
+  $("f-gnote").textContent = ev && ev.base ? "這是重複行程：修改會套用到每一次（日期不能改）；刪除時可以選只刪這一天。" : (moveFrom ? "會複製一份到「家庭」日曆讓豪豪也看得到，你自己 Google 日曆裡的那筆會保留。" : "儲存後會出現在 Google「家庭」日曆，提醒由 Google 日曆發出。");
   $("del").hidden = !ev; $("confirm").hidden = true; $("f-err").hidden = true; dupOK=false; $("save").textContent="儲存";
   $("scrim").hidden=false; $("sheet").hidden=false;
   if(!prefill && !ev) setTimeout(()=>$("f-title").focus(),50);
@@ -526,20 +526,14 @@ $("form").addEventListener("submit", async e=>{
     } else if(editing){
       await api(calPath(famCal,editing.id),{method:"PATCH",body:bodyFor(d)});
     } else if(moveFrom){
-      const src=moveFrom;
-      if(!src.base){
-        const moved=await api(calPath("primary",src.id)+"/move?destination="+encodeURIComponent(famCal),{method:"POST"});
-        await api(calPath(famCal,moved.id),{method:"PATCH",body:bodyFor(d)});
-      } else {
-        await api(calPath(famCal),{method:"POST",body:bodyFor(d)});
-        try{ await api(calPath("primary",src.id),{method:"DELETE"}); }catch(_){ toast("已加入家庭，但個人日曆那筆沒刪到"); }
-      }
+      // 複製一份到「家庭」日曆給豪豪看；自己 Google 日曆裡那筆保留不動
+      await api(calPath(famCal),{method:"POST",body:bodyFor(d)});
     } else {
       await api(calPath(famCal),{method:"POST",body:bodyFor(d)});
     }
     rememberColor(d);
     sel=d.date; const dd=parse(d.date); view=new Date(dd.getFullYear(),dd.getMonth(),1);
-    const wasEdit=!!editing; closeSheet(); toast(wasEdit?"已更新":"已新增「"+d.title+"」"); load();
+    const wasEdit=!!editing, wasCopy=!!moveFrom; closeSheet(); toast(wasEdit?"已更新":wasCopy?"已加入家庭（你的 Google 日曆也保留）":"已新增「"+d.title+"」"); load();
   }catch(err){ showErr("儲存失敗："+why(err)); }
   finally{ saving=false; $("save").disabled=false; if($("save").textContent==="儲存中…") $("save").textContent="儲存"; }
 });
@@ -963,7 +957,7 @@ function openGreeting(){
 }
 
 /* ================= 深色主題、整合選人列、連假打氣 ================= */
-document.documentElement.dataset.theme="dark";
+document.documentElement.dataset.theme="light";
 function gAvailable(){ try{ return typeof gOK==="undefined" ? true : !!gOK; }catch(e){ return true; } }
 {
   const _rme=renderMe;

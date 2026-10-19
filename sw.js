@@ -1,5 +1,5 @@
 // 讓 app 離線也能打開；行程資料一律向 Google 取最新的
-const CACHE = "sushi-cal-v16";
+const CACHE = "sushi-cal-v17";
 const SHELL = ["./", "index.html", "style.css", "app.css", "app.js", "config.js", "manifest.webmanifest", "icon-180.png", "icon-192.png", "icon-512.png"];
 self.addEventListener("install", e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting())); });
 self.addEventListener("activate", e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim())); });
