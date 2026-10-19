@@ -199,3 +199,41 @@ body[data-solo="g"]{--solo:var(--gsolo);--solo-bg:var(--gsolo-bg);--solo-on:var(
 .confetti i{position:absolute;top:-16px;width:8px;height:14px;border-radius:3px;opacity:.9;animation:fall linear infinite}
 @keyframes fall{from{transform:translateY(-20px) rotate(0)}to{transform:translateY(110vh) rotate(540deg)}}
 @media (prefers-reduced-motion:reduce){.confetti{display:none}.cbig{animation:none}.brief{animation:none}}
+
+/* 整合選人列（全家・霖霖・豪豪・Sushi・我的 Google） */
+#filters{display:none!important}
+.crew.crew5{gap:6px;justify-content:space-between;padding:10px 2px 0}
+.crew5 .mate{flex:1 1 0;min-width:0;max-width:84px;padding:6px 2px 12px;gap:2px;border-radius:20px 20px 0 0}
+.crew5 .mate>svg{width:46px;height:auto}
+.crew5 .mate span{font-size:.74rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.crew5 .mate .trio{display:flex;height:46px;align-items:center;justify-content:center}
+.crew5 .mate .trio svg{width:24px;height:auto}
+.crew5 .mate .trio svg+svg{margin-left:-7px}
+.crew5 .mate .gico{width:40px;height:40px;margin:3px 0;border-radius:50%;background:#fff;color:#4285f4;font:700 1.25rem/40px var(--font-num,system-ui);text-align:center;box-shadow:inset 0 0 0 1.5px var(--line),0 2px 6px rgba(0,0,0,.12)}
+.crew5 .mate .gico+span{font-size:.68rem}
+.crew5 .mate[aria-pressed="true"]{background:var(--glass-strong);box-shadow:var(--glass-shadow),inset 0 -3px 0 var(--accent)}
+.crew5 .mate.fam[aria-pressed="true"]{box-shadow:var(--glass-shadow),inset 0 -3px 0 var(--fam)}
+.crew5 .mate.gm[aria-pressed="true"]{box-shadow:var(--glass-shadow),inset 0 -3px 0 var(--gsolo)}
+.crew5.solo .mate[aria-pressed="false"] svg,.crew5.solo .mate[aria-pressed="false"] .gico{opacity:.42;filter:grayscale(.7)}
+.crew5 .mate:active{transform:scale(.95)}
+/* 連假打氣 */
+.cheer{display:flex;align-items:center;gap:12px;padding:12px 14px;margin:2px 0 6px;border-radius:18px;
+  background:linear-gradient(135deg,color-mix(in srgb,var(--hol) 22%,transparent),color-mix(in srgb,var(--accent) 18%,transparent));border:1px solid color-mix(in srgb,var(--hol) 35%,transparent)}
+.cheer svg{flex:none}
+.cheer strong{display:block;font-weight:600;color:var(--ink)}
+.cheer span{font-size:.86rem;color:var(--muted)}
+/* 深色主題微調 */
+:root[data-theme="dark"]{
+  --bg:#16131b; --paper:rgba(38,32,46,.74); --ink:#f1ebf4; --muted:#aba3b3; --line:rgba(225,205,235,.13); --soft:rgba(64,54,74,.6);
+  --accent:#cfa6d3; --accent-2:#8d6b98; --accent-on:#1c1222;
+  --mom:#cfa6d3; --mom-on:#1c1222; --mom-bg:#33263a;
+  --dad:#9dbda9; --dad-on:#10201a; --dad-bg:#20302a;
+  --sushi:#f0a3b8; --sushi-on:#2a1018; --sushi-bg:#3b2430;
+  --fam:#a58b78; --fam-on:#fff6ee; --fam-bg:#30271f;
+  --gsolo:#8fa2c6; --gsolo-on:#111827; --gsolo-bg:#232a3a;
+  --hol:#e9a0ad; --today:#cfa6d3; --today-on:#1c1222;
+  --glass:rgba(255,255,255,.065); --glass-strong:rgba(255,255,255,.12); --glass-border:rgba(255,255,255,.14);
+  --glass-shadow:0 8px 22px rgba(0,0,0,.38), inset 0 1px 0 rgba(255,255,255,.1);
+  --shadow:0 10px 28px rgba(0,0,0,.35);
+  --page-bg:radial-gradient(110% 70% at 0% 0%, #3a2742 0%, rgba(58,39,66,0) 60%), radial-gradient(110% 70% at 100% 100%, #1c3128 0%, rgba(28,49,40,0) 60%), #16131b;
+  color-scheme:dark}

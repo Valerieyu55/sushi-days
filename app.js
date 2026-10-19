@@ -961,4 +961,63 @@ function openGreeting(){
     if(hiddenAt && Date.now()-hiddenAt>20*60*1000 && !briefEl && !document.querySelector(".celebrate")) setTimeout(openGreeting,800);
   });
 }
+
+/* ================= 深色主題、整合選人列、連假打氣 ================= */
+document.documentElement.dataset.theme="dark";
+function gAvailable(){ try{ return typeof gOK==="undefined" ? true : !!gOK; }catch(e){ return true; } }
+{
+  const _rme=renderMe;
+  renderMe=function(hop){
+    _rme.apply(this,arguments);
+    const c=$("crew"); if(!c) return;
+    const pp=people(), g=filter.includes("g"), A=["mom","dad","sushi"];
+    const allOn = pp.length===3, gOnly = pp.length===0 && g;
+    c.classList.add("crew5");
+    c.classList.toggle("solo", !(allOn && !g));
+    c.querySelectorAll(".mate").forEach(b=>{ const k=b.id.replace("mate-",""); if(M[k]) b.setAttribute("aria-pressed", String(isSolo(k))); });
+    const fam=document.createElement("button"); fam.type="button"; fam.className="mate fam"+(hop==="all"?" hop":""); fam.id="mate-all";
+    fam.setAttribute("aria-pressed", String(allOn)); fam.setAttribute("aria-label","看全家的行程");
+    const trio=document.createElement("span"); trio.className="trio"; ["mom","sushi","dad"].forEach(m=>trio.append(svgEl(m,30)));
+    const fs=document.createElement("span"); fs.textContent="全家"; fam.append(trio,fs);
+    fam.onclick=()=>{ filter=A.slice(); applyFilter(); };
+    c.prepend(fam);
+    if(gAvailable()){
+      const gb=document.createElement("button"); gb.type="button"; gb.className="mate gm"; gb.id="mate-g";
+      gb.setAttribute("aria-pressed", String(g)); gb.setAttribute("aria-label", gOnly?"回到看全家的行程":"只看我的 Google 行程");
+      const gi=document.createElement("span"); gi.className="gico"; gi.textContent="G";
+      const gs=document.createElement("span"); gs.textContent="Google"; gb.append(gi,gs);
+      gb.onclick=()=>{ filter = gOnly ? A.slice() : ["g"]; applyFilter(); };
+      c.append(gb);
+    }
+  };
+  const pp=people(); renderMe(pp.length===1?pp[0]:null);
+}
+/* 這週有連假 → 打氣的話 */
+function weekStartK(k){ const d=parse(k); const wd=(d.getDay()+6)%7; d.setDate(d.getDate()-wd); return keyOf(d); }
+function holidayCheer(){
+  const t=keyOf(new Date());
+  const on=holidayOn(t);
+  if(on && spanDays(on.span)>=3){
+    const i=dayDiff(on.span[1],t)+1, n=spanDays(on.span), left=n-i;
+    return {title:on.span[0]+"・第 "+i+" 天", text: left>0 ? "還有 "+left+" 天假期，好好休息、陪陪家人！" : "連假最後一天，好好享受，明天再一起加油！"};
+  }
+  const nx=HOLIDAYS.find(h=>h[1]>t && spanDays(h)>=3); if(!nx) return null;
+  const n=dayDiff(t,nx[1]); if(n>7) return null;
+  const d=parse(nx[1]), wd="日一二三四五六"[d.getDay()];
+  const when = weekStartK(nx[1])===weekStartK(t) ? "這週"+wd : "下週"+wd;
+  const len=spanDays(nx);
+  if(n===1) return {title:"明天開始放"+nx[0]+"！", text:"連休 "+len+" 天，今天把事情做完就輕鬆囉，最後衝刺加油！"};
+  let work=0; for(let k=t;k<nx[1];k=addDays(k,1)){ const w=parse(k).getDay(); if(w!==0 && w!==6 && !holidayOn(k)) work++; }
+  return {title:when+"開始放"+nx[0], text:"連休 "+len+" 天！"+(work>0?"再撐 "+work+" 個上班日就放假了，":"")+"加油，你們最棒了！"};
+}
+{
+  const _fb=fillBrief;
+  fillBrief=function(){
+    _fb.apply(this,arguments);
+    if(!briefEl) return; const box=briefEl.querySelector(".bbody"); const c=holidayCheer(); if(!c||!box) return;
+    const el=document.createElement("div"); el.className="cheer";
+    const tx=document.createElement("div"); tx.innerHTML="<strong></strong><span></span>"; tx.firstChild.textContent=c.title; tx.lastChild.textContent=c.text;
+    el.append(iconEl("lantern",34), tx); box.prepend(el);
+  };
+}
 })();
