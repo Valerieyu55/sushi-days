@@ -291,3 +291,13 @@ body[data-solo="g"]{--solo:var(--gsolo);--solo-bg:var(--gsolo-bg);--solo-on:var(
 .mmore{align-self:center;border:0;background:none;color:var(--muted);font:inherit;font-size:.82rem;padding:4px 10px}
 .mempty{margin:2px 6px;color:var(--muted);font-size:.86rem}
 .bmemo .memo{margin-bottom:6px}
+
+/* 刪除小確認框 */
+.mini-ov{background:rgba(48,36,54,.22)}
+.minibox{width:min(300px,100%);padding:18px 16px 14px;border-radius:22px;text-align:center;background:var(--paper);-webkit-backdrop-filter:blur(24px) saturate(150%);backdrop-filter:blur(24px) saturate(150%);border:1px solid var(--glass-border);box-shadow:0 18px 44px rgba(60,40,70,.25);animation:briefin .2s ease}
+.minibox p{margin:0 4px 14px;font-size:1rem;line-height:1.45;color:var(--ink);word-break:break-word}
+.minirow{display:flex;gap:8px}
+.minirow.col{flex-direction:column}
+.minirow button{flex:1;min-height:44px;border-radius:999px;font:inherit;font-size:.95rem;font-weight:600}
+.minirow .mcancel{color:var(--ink);background:var(--glass-strong);border:1px solid var(--glass-border)}
+.minirow .mdanger{color:#fff;background:#d9707f;border:1px solid rgba(255,255,255,.4);box-shadow:0 6px 14px rgba(217,112,127,.3)}

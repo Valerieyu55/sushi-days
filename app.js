@@ -23,7 +23,7 @@ const SCOPE = "https://www.googleapis.com/auth/calendar.events https://www.googl
 const M = { mom:{name:"霖霖"}, dad:{name:"豪豪"}, sushi:{name:"Sushi"} };
 const NAME2KEY = {"霖霖":"mom","豪豪":"dad","Sushi":"sushi","媽媽":"mom","爸爸":"dad"};
 const ALL3 = ["mom","dad","sushi"];
-const famIfSushi = ms => (Array.isArray(ms) && ms.includes("sushi")) ? ALL3.slice() : ms;
+const famIfSushi = ms => ms; // Sushi 可以只跟霖霖或豪豪
 const MEMBER_RULES=[[/美育|哈樂|蹦蹦跳|疫苗|預防針|出遊|旅遊|旅行|露營|民宿|野餐|動物園/, ALL3],[/籃球|🏀/, ["dad"]]];
 function membersFor(title){ const t=String(title||""); for(const [re,ms] of MEMBER_RULES) if(re.test(t)) return ms.slice(); return null; }
 const REP = {weekly:"每週",biweekly:"每兩週",every4w:"每四週",monthly:"每月",yearly:"每年"};
@@ -35,7 +35,7 @@ const COLORS=[["salmon","鮭魚橘","6"],["tuna","鮪魚紅","11"],["egg","玉�
 const CK=COLORS.map(c=>c[0]);
 const DEFAULT_TPL=[
   {id:"meiyu",title:"美育",weekday:0,allDay:false,start:"09:00",end:"10:00",repeat:"weekly",members:ALL3},
-  {id:"hale",title:"哈樂",weekday:0,allDay:false,start:"11:30",end:"12:30",repeat:"weekly",members:ALL3},
+  {id:"hale",title:"哈樂維",weekday:0,allDay:false,start:"11:30",end:"12:30",repeat:"weekly",members:ALL3},
   {id:"beng",title:"蹦蹦跳",weekday:6,allDay:false,start:"10:00",end:"11:00",repeat:"weekly",members:ALL3},
   {id:"tutor",title:"老公家教",weekday:3,allDay:true,start:"",end:"",repeat:"weekly",members:["dad"]},
   {id:"ball",title:"籃球 🏀",weekday:6,allDay:false,start:"20:00",end:"22:00",repeat:"weekly",members:["dad"]},
@@ -62,6 +62,7 @@ let view = new Date(now.getFullYear(), now.getMonth(), 1);
 let sel = keyOf(now);
 let famEvents = [], mineEvents = [], famCal = CFG.FAMILY_CAL || null;
 let templates = store.get("sc.tpl", null) || DEFAULT_TPL.slice();
+templates.forEach(t=>{ if(t && t.title==="哈樂") t.title="哈樂維"; });
 let titleColors = store.get("sc.titleColors",{});
 let editing = null, draftWho = [], manageTpl = false, moveFrom = null, dupOK = false, saving = false, whoTouched = false;
 let pickDates = new Set(), pickView = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -155,7 +156,9 @@ const isSolo = k => { const p=people(); return p.length===1 && p[0]===k; };
 function visible(e){ const w=e.members&&e.members.length?e.members:ALL3; return w.some(m=>filter.includes(m)); }
 const byTime = (x,y)=> (x.allDay===y.allDay ? (x.start||"").localeCompare(y.start||"") : (x.allDay?-1:1));
 const onDay = (e,k) => k>=e.startK && k<=e.endK;
-function famOn(k){ return famEvents.filter(e=>onDay(e,k) && visible(e)).sort(byTime); }
+function famOn(k){
+  if(people().length===0 && filter.includes("g")) return famEvents.filter(e=>onDay(e,k) && (e.members||[]).includes(me)).sort(byTime); // 「Google」畫面：也顯示有我的家庭行程
+  return famEvents.filter(e=>onDay(e,k) && visible(e)).sort(byTime); }
 function mineOn(k){
   if(!filter.includes("g")) return [];
   const fam=famOn(k).map(e=>norm(cleanTitle(e.title)));
@@ -174,7 +177,7 @@ function applySolo(){
   const back=$("solo-back"), nm=$("solo-name"), sb=$("solo-sub"); back.hidden=false;
   const go=list=>{ filter=list; applyFilter(); };
   if(k==="g"){ const gb=document.createElement("span"); gb.className="gbig"; gb.textContent="G"; ic.append(gb);
-    nm.textContent="我的 Google 行事曆"; sb.textContent="只顯示你自己的 Google 日曆，別人看不到"; back.textContent="加上全家"; back.onclick=()=>go(A.concat("g")); }
+    nm.textContent="我的 Google 行事曆"; sb.textContent="你自己的 Google 日曆，加上有你的家庭行程"; back.textContent="加上全家"; back.onclick=()=>go(A.concat("g")); }
   else if(k==="all"){ ["mom","sushi","dad"].forEach(m=>ic.append(svgEl(m,38)));
     if(g){ nm.textContent="全家 ＋ 我的 Google"; sb.textContent="全家的行程，加上你自己的 Google 行程"; back.textContent="只看全家"; back.onclick=()=>go(A.slice()); }
     else { nm.textContent="全家的行事曆"; sb.textContent="霖霖、豪豪和 Sushi 的行程都在這裡"; back.hidden=true; } }
@@ -411,8 +414,6 @@ function renderWho(){
     const b=document.createElement("button"); b.type="button"; b.dataset.m=k; b.id="who-"+k; b.append(svgEl(k,30), document.createTextNode(v.name));
     b.setAttribute("aria-pressed", draftWho.includes(k));
     b.onclick=()=>{ whoTouched=true;
-      if(k==="sushi" && !draftWho.includes("sushi")){ draftWho=ALL3.slice(); renderWho(); toast("有 Sushi 的行程會自動變成全家"); return; }
-      if(k!=="sushi" && draftWho.includes("sushi") && draftWho.includes(k)){ toast("有 Sushi 的行程是全家行程"); return; }
       draftWho = draftWho.includes(k)? draftWho.filter(x=>x!==k) : draftWho.concat(k); b.setAttribute("aria-pressed", draftWho.includes(k)); };
     w.append(b);
   });
@@ -452,7 +453,7 @@ function openSheet(ev, prefill){
   setAllDay(!!p.allDay, p.remind!=null ? p.remind : (p.allDay?240:30));
   draftWho = (p.members && p.members.length ? p.members : (membersFor(p.title)||[me])).slice(); whoTouched=false;
   renderWho(); renderColors();
-  $("f-gnote").textContent = ev && ev.base ? "這是重複行程：修改會套用到每一次（日期不能改）；刪除時可以選只刪這一天。" : (moveFrom ? "會複製一份到「家庭」日曆讓豪豪也看得到，你自己 Google 日曆裡的那筆會保留。" : "儲存後會出現在 Google「家庭」日曆，提醒由 Google 日曆發出。");
+  $("f-gnote").textContent = ev && ev.base ? "這是重複行程：修改會套用到每一次（日期不能改）；刪除時可以選只刪這一天。" : (moveFrom ? "會搬到「家庭」日曆，豪豪看得到；你手機的 Google 日曆裡只會留一筆，不會重複。在 app 的「Google」畫面也看得到它。" : "儲存後會出現在 Google「家庭」日曆，提醒由 Google 日曆發出。");
   $("del").hidden = !ev; $("confirm").hidden = true; $("f-err").hidden = true; dupOK=false; $("save").textContent="儲存";
   $("scrim").hidden=false; $("sheet").hidden=false;
   if(!prefill && !ev) setTimeout(()=>$("f-title").focus(),50);
@@ -526,14 +527,21 @@ $("form").addEventListener("submit", async e=>{
     } else if(editing){
       await api(calPath(famCal,editing.id),{method:"PATCH",body:bodyFor(d)});
     } else if(moveFrom){
-      // 複製一份到「家庭」日曆給豪豪看；自己 Google 日曆裡那筆保留不動
-      await api(calPath(famCal),{method:"POST",body:bodyFor(d)});
+      // 搬到「家庭」日曆：手機 Google 日曆只會有一筆
+      const src=moveFrom;
+      if(!src.base){
+        const moved=await api(calPath("primary",src.id)+"/move?destination="+encodeURIComponent(famCal),{method:"POST"});
+        await api(calPath(famCal,moved.id),{method:"PATCH",body:bodyFor(d)});
+      } else {
+        await api(calPath(famCal),{method:"POST",body:bodyFor(d)});
+        try{ await api(calPath("primary",src.id),{method:"DELETE"}); }catch(_){ toast("已加入家庭，但個人日曆那筆沒刪到"); }
+      }
     } else {
       await api(calPath(famCal),{method:"POST",body:bodyFor(d)});
     }
     rememberColor(d);
     sel=d.date; const dd=parse(d.date); view=new Date(dd.getFullYear(),dd.getMonth(),1);
-    const wasEdit=!!editing, wasCopy=!!moveFrom; closeSheet(); toast(wasEdit?"已更新":wasCopy?"已加入家庭（你的 Google 日曆也保留）":"已新增「"+d.title+"」"); load();
+    const wasEdit=!!editing, wasCopy=!!moveFrom; closeSheet(); toast(wasEdit?"已更新":wasCopy?"已加入家庭（手機上只會有一筆）":"已新增「"+d.title+"」"); load();
   }catch(err){ showErr("儲存失敗："+why(err)); }
   finally{ saving=false; $("save").disabled=false; if($("save").textContent==="儲存中…") $("save").textContent="儲存"; }
 });
@@ -1233,5 +1241,39 @@ function renderMemos(){
   try{ memos=store.get("sc.memos",[])||[]; }catch(e){ memos=[]; }
   renderMemos();
   if(famCal && tokenValid()) loadMemos();
+}
+
+/* 左滑刪除：小小的確認框 */
+function miniConfirm(title, buttons){
+  const ov=document.createElement("div"); ov.className="ov mini-ov"; ov.setAttribute("role","alertdialog"); ov.setAttribute("aria-modal","true");
+  const box=document.createElement("div"); box.className="minibox";
+  const p=document.createElement("p"); p.textContent=title; box.append(p);
+  const row=document.createElement("div"); row.className="minirow"+(buttons.length>2?" col":"");
+  const close=()=>{ ov.classList.add("out"); setTimeout(()=>ov.remove(),180); document.removeEventListener("keydown",esc); };
+  const esc=e=>{ if(e.key==="Escape") close(); };
+  buttons.forEach(b=>{ const btn=document.createElement("button"); btn.type="button"; btn.textContent=b.label; btn.className=b.danger?"mdanger":"mcancel";
+    btn.onclick=async()=>{ if(!b.act){ close(); return; } row.querySelectorAll("button").forEach(x=>x.disabled=true); btn.textContent="刪除中…"; try{ await b.act(); } finally{ close(); } };
+    row.append(btn); });
+  box.append(row); ov.append(box); document.body.append(ov);
+  ov.addEventListener("click",e=>{ if(e.target===ov) close(); }); document.addEventListener("keydown",esc);
+  setTimeout(()=>{ const c=row.querySelector(".mcancel"); if(c) c.focus({preventScroll:true}); },40);
+}
+{
+  const _sr=swipeRow;
+  swipeRow=function(card,ev){
+    const w=_sr.apply(this,arguments); const del=w.querySelector(".swdel"); if(!del) return w;
+    const cancel={label:"取消"};
+    del.onclick=()=>{
+      if(typeof deleteEvent==="function"){
+        miniConfirm("刪除「"+ev.title+"」？",[cancel,{label:"刪除",danger:true,act:()=>deleteEvent(ev)}]);
+        return;
+      }
+      const go=async(id,all)=>{ try{ await api(calPath(famCal,id),{method:"DELETE"}); toast("已刪除「"+ev.title+"」"+(all?"（整個重複）":"")); }
+        catch(e){ if(!(e&&(e.code===410||e.code===404))) toast("刪除失敗："+why(e)); } try{ closeSwipe(); }catch(_){} load(); };
+      if(ev.base) miniConfirm("「"+ev.title+"」是重複行程，要刪哪些？",[{label:"只刪這一天",danger:true,act:()=>go(ev.id,false)},{label:"整個重複都刪",danger:true,act:()=>go(ev.base,true)},cancel]);
+      else miniConfirm("刪除「"+ev.title+"」？",[cancel,{label:"刪除",danger:true,act:()=>go(ev.id,false)}]);
+    };
+    return w;
+  };
 }
 })();
